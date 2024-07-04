@@ -37,6 +37,9 @@ dependencies:
   cupertino_icons: ^1.0.6
   flutter_native_splash: ^2.4.0
   liquid_pull_to_refresh: ^3.0.1
+  chart_sparkline: ^1.0.14
+  marqueer: ^1.4.1
+  pull_down_button: ^0.9.3
 
 dev_dependencies:
   flutter_test:
