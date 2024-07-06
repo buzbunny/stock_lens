@@ -1,8 +1,8 @@
-import 'package:crypto/View/selectCoin.dart';
+import 'selectCoin.dart';
 import 'package:flutter/material.dart';
 
 class Item2 extends StatelessWidget {
-  var item;
+  final item;
   Item2({this.item});
 
   @override
@@ -11,36 +11,44 @@ class Item2 extends StatelessWidget {
     double myWidth = MediaQuery.of(context).size.width;
     return Padding(
       padding: EdgeInsets.symmetric(
-          horizontal: myWidth * 0.03, vertical: myHeight * 0.02),
+          horizontal: myWidth * 0.02, vertical: myHeight * 0.005), // Reduced padding
       child: GestureDetector(
         onTap: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (contest) => SelectCoin(selectItem: item,)));
+              context, MaterialPageRoute(builder: (context) => SelectCoin(selectItem: item,)));
         },
         child: Container(
-          padding: EdgeInsets.only(
-            left: myWidth * 0.03,
-            right: myWidth * 0.06,
-            top: myHeight * 0.02,
-            bottom: myHeight * 0.02,
+          padding: EdgeInsets.symmetric(
+            horizontal: 20, // Reduced horizontal padding
+            vertical: 10, // Reduced vertical padding
           ),
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.grey)),
+            color: Colors.grey[850],
+            borderRadius: BorderRadius.circular(10), // Reduced border radius
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.8),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: Offset(0, 3), // changes position of shadow
+              ),
+            ],
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                  height: myHeight * 0.035, child: Image.network(item.image)),
+                  height: myHeight * 0.025, // Reduced height of the image container
+                  child: Image.network(item.image)),
               SizedBox(
-                height: myHeight * 0.02,
+                height: 5, // Reduced vertical spacing
               ),
               Text(
                 item.id,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
               ),
               SizedBox(
-                height: myHeight * 0.01,
+                height: 5, // Reduced vertical spacing
               ),
               Row(
                 children: [
@@ -53,17 +61,17 @@ class Item2 extends StatelessWidget {
                                 .replaceAll('-', '')
                         : "\$" + item.priceChange24H.toStringAsFixed(2),
                     style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.normal,
                         color: Colors.grey),
                   ),
                   SizedBox(
-                    width: myWidth * 0.03,
+                    width: 5,
                   ),
                   Text(
                     item.marketCapChangePercentage24H.toStringAsFixed(2) + '%',
                     style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.normal,
                         color: item.marketCapChangePercentage24H >= 0
                             ? Colors.green

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pull_down_button/pull_down_button.dart';
+import 'home_page.dart';
 
 
 void main() {
@@ -43,7 +44,7 @@ class MyApp extends StatelessWidget {
         ),
         primaryColor: const Color.fromARGB(255, 78, 172, 248),
       ),
-      home: HomePageScreen(),
+      home: Home(),
     );
   }
 }
