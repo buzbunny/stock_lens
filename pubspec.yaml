@@ -42,6 +42,8 @@ dependencies:
   pull_down_button: ^0.9.3
   http: ^0.13.5
   syncfusion_flutter_charts: ^20.4.48
+  provider: ^6.0.0
+  shared_preferences: ^2.0.6
 
 dev_dependencies:
   flutter_test:
@@ -60,7 +62,7 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
-    - assets/logo-color.png
+    - assets/logo-white.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'coinModel.dart';
 import 'item.dart';
 import 'item2.dart';
+import 'navbar.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -12,34 +15,74 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool isRefreshing = true;
   List? coinMarket = [];
-  var coinMarketList;
+  static const String cacheKey = 'coinMarketCache';
 
   @override
   void initState() {
-    getCoinMarket();
     super.initState();
+    loadCachedData();
   }
 
-  Future<List<CoinModel>?> getCoinMarket() async {
+  Future<void> loadCachedData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cachedData = prefs.getString(cacheKey);
+
+    if (cachedData != null) {
+      setState(() {
+        coinMarket = coinModelFromJson(cachedData);
+        isRefreshing = false;
+      });
+    } else {
+      await getCoinMarket();
+    }
+  }
+
+  Future<void> getCoinMarket() async {
     const url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&sparkline=true';
     setState(() {
       isRefreshing = true;
     });
-    var response = await http.get(Uri.parse(url), headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-    });
-    setState(() {
-      isRefreshing = false;
-    });
-    if (response.statusCode == 200) {
-      var x = response.body;
-      coinMarketList = coinModelFromJson(x);
-      setState(() {
-        coinMarket = coinMarketList;
+    try {
+      var response = await http.get(Uri.parse(url), headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
       });
-    } else {
-      print(response.statusCode);
+
+      if (response.statusCode == 200) {
+        var responseBody = response.body;
+        var coinMarketList = coinModelFromJson(responseBody);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(cacheKey, responseBody);
+
+        setState(() {
+          coinMarket = coinMarketList;
+          isRefreshing = false;
+        });
+      } else {
+        print(response.statusCode);
+        setState(() {
+          isRefreshing = false;
+        });
+      }
+    } catch (e) {
+      print(e.toString());
+      setState(() {
+        isRefreshing = false;
+      });
+    }
+  }
+
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    if (index == 1) {
+      Navigator.pushNamed(context, '/search');
+    } else if (index == 2) {
+      Navigator.pushNamed(context, '/settings');
     }
   }
 
@@ -50,24 +93,39 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          height: myHeight,
-          width: myWidth,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Colors.black, Colors.grey[900]!]),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              HeaderSection(myHeight: myHeight, myWidth: myWidth),
-              ActiveStockSection(isRefreshing: isRefreshing, coinMarket: coinMarket, myHeight: myHeight, myWidth: myWidth),
-              WatchlistSection(isRefreshing: isRefreshing, coinMarket: coinMarket, myHeight: myHeight, myWidth: myWidth),
-            ],
-          ),
-        ),
+        child: _selectedIndex == 0
+            ? LiquidPullToRefresh(
+                onRefresh: getCoinMarket,
+                showChildOpacityTransition: false,
+                child: Container(
+                  height: myHeight,
+                  width: myWidth,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.black, Colors.grey[900]!]),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      HeaderSection(myHeight: myHeight, myWidth: myWidth),
+                      ActiveStockSection(isRefreshing: isRefreshing, coinMarket: coinMarket, myHeight: myHeight, myWidth: myWidth),
+                      WatchlistSection(isRefreshing: isRefreshing, coinMarket: coinMarket, myHeight: myHeight, myWidth: myWidth),
+                    ],
+                  ),
+                ),
+              )
+            : Center(
+                child: Text(
+                  _selectedIndex == 1 ? 'Search Screen' : 'Settings Screen',
+                  style: TextStyle(fontSize: 24, color: Colors.white),
+                ),
+              ),
+      ),
+      bottomNavigationBar: CustomNavBar(
+        onTap: _onItemTapped,
+        currentIndex: _selectedIndex,
       ),
     );
   }
@@ -190,7 +248,7 @@ class WatchlistSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: myHeight * 0.2, // Reduced height for the watchlist section
+      height: 130, // Reduced height for the watchlist section
       child: Padding(
         padding: EdgeInsets.only(left: myWidth * 0.03),
         child: isRefreshing
