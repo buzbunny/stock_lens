@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences
 import 'api_call_manager.dart';
 import 'coinModel.dart';
 import 'navbar.dart';
@@ -16,6 +19,7 @@ class _SearchPageState extends State<SearchPage> {
   bool isSearching = false;
   List<CoinModel>? searchResults;
   final TextEditingController _searchController = TextEditingController();
+  bool _shouldRefresh = true; // Flag to indicate when to refresh
 
   @override
   void initState() {
@@ -30,6 +34,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _onSearchTextChanged() {
+    _shouldRefresh = true; // Trigger refresh when text changes
     _onSearch(_searchController.text);
   }
 
@@ -38,6 +43,13 @@ class _SearchPageState extends State<SearchPage> {
     if (!apiCallManager.canMakeApiCall) return null;
 
     apiCallManager.setCanMakeApiCall(false);
+
+    // Check cache first
+    List<CoinModel>? cachedResults = await _getFromCache(query);
+    if (cachedResults != null && !_shouldRefresh) {
+      return cachedResults;
+    }
+
     const url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&sparkline=true';
     try {
       setState(() {
@@ -55,6 +67,12 @@ class _SearchPageState extends State<SearchPage> {
 
       if (response.statusCode == 200) {
         var coinList = coinModelFromJson(response.body);
+
+        // Cache the results
+        await _saveToCache(query, coinList);
+
+        _shouldRefresh = false; // Reset refresh flag
+
         return coinList.where((coin) => coin.name.toLowerCase().contains(query.toLowerCase())).toList();
       } else {
         print('API request failed with status code: ${response.statusCode}');
@@ -177,6 +195,35 @@ class _SearchPageState extends State<SearchPage> {
     } else if (index == 2) {
       Navigator.pushNamed(context, '/settings');
       apiCallManager.setCanMakeApiCall(false);
+    }
+  }
+
+  // Helper methods for caching
+
+  static const String _cacheKeyPrefix = 'coin_search_cache_';
+
+  Future<void> _saveToCache(String query, List<CoinModel> data) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> jsonStringList = data.map((coin) => json.encode(coin.toJson())).toList();
+    await prefs.setStringList(_cacheKeyPrefix + query.toLowerCase(), jsonStringList);
+  }
+
+  Future<List<CoinModel>?> _getFromCache(String query) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? jsonStringList = prefs.getStringList(_cacheKeyPrefix + query.toLowerCase());
+    if (jsonStringList != null) {
+      return jsonStringList.map((jsonString) => CoinModel.fromJson(json.decode(jsonString))).toList();
+    }
+    return null;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    
+    // Check if the page is becoming active and refresh if needed
+    if (ModalRoute.of(context)?.isCurrent == true && _shouldRefresh) {
+      _onSearch(_searchController.text);
     }
   }
 }
