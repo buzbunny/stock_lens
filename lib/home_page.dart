@@ -155,17 +155,17 @@ class HeaderSection extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Good Morning Julian!',
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                     SizedBox(height: myHeight * 0.01),
-                    Text(
+                    const Text(
                       'IDR 12.480.000',
                       style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
-                    Text(
-                      '+ IDR 6.000.000 (108%)',
+                    const Text(
+                      'Active markets',
                       style: TextStyle(fontSize: 16, color: Colors.green),
                     ),
                   ],

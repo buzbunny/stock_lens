@@ -18,7 +18,7 @@ class Item2 extends StatelessWidget {
               context, MaterialPageRoute(builder: (context) => SelectCoin(selectItem: item,)));
         },
         child: Container(
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 20, // Reduced horizontal padding
             vertical: 10, // Reduced vertical padding
           ),
@@ -30,24 +30,24 @@ class Item2 extends StatelessWidget {
                 color: Colors.black.withOpacity(0.8),
                 spreadRadius: 1,
                 blurRadius: 5,
-                offset: Offset(0, 3), // changes position of shadow
+                offset: const Offset(0, 3), // changes position of shadow
               ),
             ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
+              SizedBox(
                   height: myHeight * 0.025, // Reduced height of the image container
                   child: Image.network(item.image)),
-              SizedBox(
+              const SizedBox(
                 height: 5, // Reduced vertical spacing
               ),
               Text(
                 item.id,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5, // Reduced vertical spacing
               ),
               Row(
@@ -60,12 +60,12 @@ class Item2 extends StatelessWidget {
                                 .toString()
                                 .replaceAll('-', '')
                         : "\$" + item.priceChange24H.toStringAsFixed(2),
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.normal,
                         color: Colors.grey),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   Text(

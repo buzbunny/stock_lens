@@ -140,82 +140,6 @@ class _SelectCoinState extends State<SelectCoin> {
                   Expanded(
                     child: Column(
                       children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: myWidth * 0.05,
-                              vertical: myHeight * 0.02),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                children: [
-                                  const Text(
-                                    'Low',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.white),
-                                  ),
-                                  SizedBox(
-                                    height: myHeight * 0.01,
-                                  ),
-                                  Text(
-                                    '\$' + widget.selectItem.low24H.toString(),
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  Text(
-                                    'High',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.white),
-                                  ),
-                                  SizedBox(
-                                    height: myHeight * 0.01,
-                                  ),
-                                  Text(
-                                    '\$' + widget.selectItem.high24H.toString(),
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  Text(
-                                    'Vol',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.white),
-                                  ),
-                                  SizedBox(
-                                    height: myHeight * 0.01,
-                                  ),
-                                  Text(
-                                    '\$' +
-                                        widget.selectItem.totalVolume
-                                            .toString() +
-                                        'M',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
                         SizedBox(
                           height: myHeight * 0.015,
                         ),
@@ -367,7 +291,7 @@ class _SelectCoinState extends State<SelectCoin> {
                 ],
               ),
               DraggableScrollableSheet(
-                initialChildSize: 0.3,
+                initialChildSize: 0.2,
                 minChildSize: 0.1,
                 maxChildSize: 0.8,
                 builder:
@@ -387,38 +311,82 @@ class _SelectCoinState extends State<SelectCoin> {
                           padding: EdgeInsets.symmetric(
                               horizontal: myWidth * 0.06,
                               vertical: myHeight * 0.02),
-                          child: Text(
-                            'News',
-                            style:
-                                TextStyle(fontSize: 25, color: Colors.white),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: myWidth * 0.06,
-                              vertical: myHeight * 0.01),
-                          child: Row(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: Text(
-                                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-                                  textAlign: TextAlign.justify,
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 17),
-                                ),
+                              const Text(
+                                'SUMMARY',
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
                               ),
-                              Container(
-                                width: myWidth * 0.25,
-                                child: CircleAvatar(
-                                  radius: myHeight * 0.04,
-                                  backgroundImage:
-                                      AssetImage('assets/image/11.PNG'),
-                                ),
-                              )
+                              SizedBox(
+                                height: myHeight * 0.02,
+                              ),
+                              const Text(
+                                'Low',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey),
+                              ),
+                              SizedBox(
+                                height: myHeight * 0.01,
+                              ),
+                              Text(
+                                '\$' + widget.selectItem.low24H.toString(),
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.white),
+                              ),
+                              SizedBox(
+                                height: myHeight * 0.02,
+                              ),
+                              const Text(
+                                'High',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey),
+                              ),
+                              SizedBox(
+                                height: myHeight * 0.01,
+                              ),
+                              Text(
+                                '\$' + widget.selectItem.high24H.toString(),
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.white),
+                              ),
+                              SizedBox(
+                                height: myHeight * 0.02,
+                              ),
+                              const Text(
+                                'Volume',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey),
+                              ),
+                              SizedBox(
+                                height: myHeight * 0.01,
+                              ),
+                              Text(
+                                '\$' +
+                                    widget.selectItem.totalVolume
+                                        .toString() +
+                                    'M',
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.white),
+                              ),
                             ],
                           ),
-                        )
+                        ),
                       ],
                     ),
                   );

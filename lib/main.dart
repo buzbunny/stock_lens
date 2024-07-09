@@ -4,6 +4,9 @@ import 'package:pull_down_button/pull_down_button.dart';
 import 'home_page.dart';
 import 'search_page.dart';
 import 'api_call_manager.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'login.dart';
+import 'register.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +15,25 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  Route _createRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 1.0);
+        const end = Offset(0.0, 0.0);
+        const curve = Curves.ease;
+
+        final tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -48,10 +69,154 @@ class MyApp extends StatelessWidget {
           ),
           primaryColor: const Color.fromARGB(255, 78, 172, 248),
         ),
-        home: Home(),
+        home: LandingPage(),
         routes: {
+          '/home': (context) => Home(),
           '/search': (context) => SearchPage(),
+          '/register': (context) => RegisterPage(),
+          '/login': (context) => LoginPage(),
         },
+      ),
+    );
+  }
+}
+
+class LandingPage extends StatefulWidget {
+  @override
+  _LandingPageState createState() => _LandingPageState();
+}
+
+class _LandingPageState extends State<LandingPage> {
+  final List<String> imgList = [
+    'assets/img1.avif',
+    'assets/img2.jpg',
+    'assets/img3.avif',
+    // Add more image paths
+  ];
+
+  Route _createRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 1.0);
+        const end = Offset(0.0, 0.0);
+        const curve = Curves.ease;
+
+        final tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          CarouselSlider(
+            options: CarouselOptions(
+              autoPlay: true,
+              aspectRatio: 9 / 16,
+              enlargeCenterPage: true,
+              viewportFraction: 1.0,
+              height: MediaQuery.of(context).size.height,
+            ),
+            items: imgList
+                .map((item) => Container(
+                      child: Center(
+                        child: Image.asset(item,
+                            fit: BoxFit.cover,
+                            width: 1000,
+                            height: double.infinity),
+                      ),
+                    ))
+                .toList(),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [
+                  Colors.black, // Start with black at the bottom
+                  Colors.black.withOpacity(0.6), // Gradient transition
+                  Colors.transparent, // End with transparent at the top
+                ],
+                stops: [0.0, 0.5, 1.0], // Adjust to make gradient appear correctly
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 50,
+            left: 20,
+            right: 20,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  'Empower Your Investments with Real-Time Insights',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Discover the Power of Stocks',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/register');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 100, vertical: 15),
+                  ),
+                  child: const Text(
+                    'Register Now',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      _createRoute(LoginPage()),
+                    );
+                  },
+                  child: const Text(
+                    'Already have an account? Log In',
+                    style: TextStyle(
+                      color: Colors.white,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
