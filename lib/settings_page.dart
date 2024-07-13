@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import 'navbar.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
+  @override
+  _SettingsPageState createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  bool isPushNotificationsEnabled = false;
+  bool isBiometricEnabled = false;
+  bool isDarkModeEnabled = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,17 +29,22 @@ class SettingsPage extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.black, // Ensure the app bar color matches the dark mode theme
+        backgroundColor: Colors.black,
       ),
       body: ListView(
-        padding: const EdgeInsets.only(top: 50.0, left: 16.0, right: 16.0), // Reduced top padding
+        padding: const EdgeInsets.only(top: 50.0, left: 16.0, right: 16.0),
         children: [
           const Center(
             child: Column(
               children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: AssetImage('assets/img2.jpg'),
+                  backgroundColor: Colors.white,
+                  child: Icon(
+                    Icons.person,
+                    size: 70,
+                    color: Colors.black,
+                  ),
                 ),
                 SizedBox(height: 10),
                 Text(
@@ -38,7 +52,7 @@ class SettingsPage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white, // Text color set to white
+                    color: Colors.white,
                   ),
                 ),
                 SizedBox(height: 20),
@@ -47,54 +61,60 @@ class SettingsPage extends StatelessWidget {
           ),
           ListTile(
             title: const Text(
-              'Change password',
-              style: TextStyle(color: Colors.white), // Text color set to white
+              'Change profile data',
+              style: TextStyle(color: Colors.white),
             ),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white), // Icon color set to white
+            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
             onTap: () {
-              // Handle change password action
+              // Handle change profile data action
             },
           ),
           SwitchListTile(
             title: const Text(
               'Push notifications',
-              style: TextStyle(color: Colors.white), // Text color set to white
+              style: TextStyle(color: Colors.white),
             ),
-            value: false, // Replace with your push notifications state
-            activeColor: const Color.fromARGB(255, 183, 66, 91),
+            value: isPushNotificationsEnabled,
+            activeColor: Colors.green,
             onChanged: (bool value) {
-              // Handle toggle push notifications
+              setState(() {
+                isPushNotificationsEnabled = value;
+              });
             },
           ),
           SwitchListTile(
             title: const Text(
               'Enable biometric',
-              style: TextStyle(color: Colors.white), // Text color set to white
+              style: TextStyle(color: Colors.white),
             ),
-            value: false, // Replace with your biometric enabled state
-            activeColor: const Color.fromARGB(255, 183, 66, 91),
+            value: isBiometricEnabled,
+            activeColor: Colors.green,
             onChanged: (bool value) {
-              // Handle toggle biometric enabled
+              setState(() {
+                isBiometricEnabled = value;
+              });
             },
           ),
           SwitchListTile(
             title: const Text(
               'Enable dark mode',
-              style: TextStyle(color: Colors.white), // Text color set to white
+              style: TextStyle(color: Colors.white),
             ),
-            value: false, // Replace with your biometric enabled state
-            activeColor: const Color.fromARGB(255, 183, 66, 91),
+            value: isDarkModeEnabled,
+            activeColor: Colors.green,
             onChanged: (bool value) {
-              // Handle toggle biometric enabled
+              setState(() {
+                isDarkModeEnabled = value;
+              });
             },
           ),
-          const Divider(color: Colors.white), // Divider color set to white
+          const Divider(color: Colors.white),
           ListTile(
             title: const Text(
               'About us',
-              style: TextStyle(color: Colors.white), // Text color set to white
+              style: TextStyle(color: Colors.white),
             ),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white), // Icon color set to white
+            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
             onTap: () {
               // Handle about us action
             },
@@ -102,9 +122,9 @@ class SettingsPage extends StatelessWidget {
           ListTile(
             title: const Text(
               'Terms and conditions',
-              style: TextStyle(color: Colors.white), // Text color set to white
+              style: TextStyle(color: Colors.white),
             ),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white), // Icon color set to white
+            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
             onTap: () {
               // Handle terms and conditions action
             },
@@ -112,9 +132,9 @@ class SettingsPage extends StatelessWidget {
           ListTile(
             title: const Text(
               'Logout',
-              style: TextStyle(color: Colors.white), // Text color set to white
+              style: TextStyle(color: Colors.white),
             ),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white), // Icon color set to white
+            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
             onTap: () {
               // Handle logout action
             },
@@ -125,7 +145,7 @@ class SettingsPage extends StatelessWidget {
         onTap: (index) {
           // Handle tap logic if needed
         },
-        currentIndex: 2, // Set current index accordingly
+        currentIndex: 2,
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'search_page.dart';
 import 'settings_page.dart';
+import 'news.dart'; // Import your news page here
 
 class CustomNavBar extends StatelessWidget {
   final ValueChanged<int> onTap;
@@ -32,6 +33,12 @@ class CustomNavBar extends StatelessWidget {
             icon: Icon(Icons.search, color: Colors.white),
             onPressed: () {
               _navigateTo(context, SearchPage());
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.article, color: Colors.white), // News icon
+            onPressed: () {
+              _navigateTo(context, NewsPage()); // Navigate to NewsPage
             },
           ),
           IconButton(
