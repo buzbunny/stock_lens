@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'navbar.dart';
+import 'about_us.dart';
+import 'terms_and_conditions.dart';
+import 'login.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -10,6 +13,69 @@ class _SettingsPageState extends State<SettingsPage> {
   bool isPushNotificationsEnabled = false;
   bool isBiometricEnabled = false;
   bool isDarkModeEnabled = false;
+
+
+Route createFadeRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = 0.0;
+        const end = 1.0;
+        const curve = Curves.easeInOut;
+
+        final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return FadeTransition(
+          opacity: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+
+void _showLogoutConfirmationDialog() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.grey[850], // Set background color to grey
+        title: Text(
+          'Confirm Logout',
+          style: TextStyle(color: Colors.white), // Set title text color to green
+        ),
+        content: Text(
+          'Are you sure you want to logout?',
+          style: TextStyle(color: Colors.white), // Set content text color to green
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.red), // Set button text color to green
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushAndRemoveUntil(
+                createFadeRoute(LoginPage()),
+                (Route<dynamic> route) => false,
+              );
+            },
+            child: Text(
+              'Yes',
+              style: TextStyle(color: Colors.green), // Set button text color to green
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +183,7 @@ class _SettingsPageState extends State<SettingsPage> {
             trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
             onTap: () {
               // Handle about us action
+              Navigator.of(context).push(createFadeRoute( AboutUsPage()));
             },
           ),
           ListTile(
@@ -127,6 +194,7 @@ class _SettingsPageState extends State<SettingsPage> {
             trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
             onTap: () {
               // Handle terms and conditions action
+              Navigator.of(context).push(createFadeRoute( TermsAndConditions()));
             },
           ),
           ListTile(
@@ -135,9 +203,7 @@ class _SettingsPageState extends State<SettingsPage> {
               style: TextStyle(color: Colors.white),
             ),
             trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
-            onTap: () {
-              // Handle logout action
-            },
+            onTap: _showLogoutConfirmationDialog,
           ),
         ],
       ),
@@ -145,7 +211,7 @@ class _SettingsPageState extends State<SettingsPage> {
         onTap: (index) {
           // Handle tap logic if needed
         },
-        currentIndex: 2,
+        currentIndex: 4,
       ),
     );
   }

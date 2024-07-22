@@ -4,9 +4,21 @@ import 'package:pull_down_button/pull_down_button.dart';
 import 'home_page.dart';
 import 'search_page.dart';
 import 'api_call_manager.dart';
+import 'watchlist_manager.dart'; // Import the watchlist manager
+import 'watchList.dart'; // Import the WatchListPage
 import 'package:carousel_slider/carousel_slider.dart';
 import 'login.dart';
 import 'register.dart';
+import 'dart:io';
+
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
+}
 
 void main() {
   runApp(const MyApp());
@@ -36,8 +48,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ApiCallManager(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ApiCallManager()),
+        ChangeNotifierProvider(create: (context) => WatchlistManager()), // Add WatchlistManager provider
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

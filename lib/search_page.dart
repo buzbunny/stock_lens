@@ -192,7 +192,7 @@ class _SearchPageState extends State<SearchPage> {
     if (index == 0) {
       Navigator.pushNamed(context, '/');
       apiCallManager.setCanMakeApiCall(true);
-    } else if (index == 2) {
+    } else if (index == 4) {
       Navigator.pushNamed(context, '/settings');
       apiCallManager.setCanMakeApiCall(false);
     }

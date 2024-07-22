@@ -12,7 +12,6 @@ class NewsPage extends StatefulWidget {
 
 class _NewsPageState extends State<NewsPage> {
   List articles = [];
-  bool isLoading = true;
 
   @override
   void initState() {
@@ -26,18 +25,12 @@ class _NewsPageState extends State<NewsPage> {
     if (cachedNews != null) {
       setState(() {
         articles = json.decode(cachedNews);
-        isLoading = false;
       });
     }
-    fetchNews();
   }
 
   Future<void> fetchNews() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    const apiKey = 'RiOtnEWCIHeHafp0mENfX4gqJzLzVaraU8RYJjvP';
+    const apiKey = 'B12TPA6n026x2rp8Qb6O1c5CQARy2fmp';
     var headers = {
       'apikey': apiKey,
     };
@@ -45,8 +38,8 @@ class _NewsPageState extends State<NewsPage> {
     var request = http.Request(
       'GET',
       Uri.parse(
-        'https://api.marketaux.com/v1/news/all?countries=us&filter_entities=true&limit=10&published_after=2024-07-12T21:20&api_token=RiOtnEWCIHeHafp0mENfX4gqJzLzVaraU8RYJjvP'
-      )
+        'https://api.apilayer.com/financelayer/news?date=today&keywords=at%26t&sources=seekingalpha.com&keyword=merger&tickers=dis'
+      ),
     );
 
     request.headers.addAll(headers);
@@ -58,15 +51,11 @@ class _NewsPageState extends State<NewsPage> {
       final Map<String, dynamic> data = json.decode(responseBody);
       setState(() {
         articles = data['data'] ?? [];
-        isLoading = false;
       });
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('cachedNews', json.encode(articles));
     } else {
-      setState(() {
-        isLoading = false;
-      });
       throw Exception('Failed to load news');
     }
   }
@@ -96,34 +85,40 @@ class _NewsPageState extends State<NewsPage> {
           ),
         ],
       ),
-      body: Builder(
-        builder: (context) => LiquidPullToRefresh(
-          onRefresh: handleRefresh,
-          showChildOpacityTransition: false,
-          child: isLoading
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      UserHeader(),
-                      Tabs(),
-                      ...articles.map((article) => NewsCard(
-                            title: article['title'],
-                            author: article['source'],
-                            date: article['published_at'],
-                            views: '',
-                            comments: '',
-                            likes: '',
-                          )),
-                    ],
-                  ),
+      body: LiquidPullToRefresh(
+        onRefresh: handleRefresh,
+        showChildOpacityTransition: false,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              UserHeader(),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    TabButton(text: 'Today'),
+                    // Add more TabButtons as needed
+                  ],
                 ),
+              ),
+              SizedBox(height: 10),
+              Column(
+                children: articles.map((article) => NewsCard(
+                  title: article['title'],
+                  author: article['source'],
+                  date: article['published_at'],
+                  views: '',
+                  comments: '',
+                  likes: '',
+                )).toList(),
+              ),
+            ],
+          ),
         ),
       ),
-      bottomNavigationBar: CustomNavBar( // Adding CustomNavBar at the bottom
-        currentIndex: 0, // Set the current index accordingly
+      bottomNavigationBar: CustomNavBar(
+        currentIndex: 2,
         onTap: (index) {
           // Handle navigation
         },
@@ -143,8 +138,8 @@ class UserHeader extends StatelessWidget {
             backgroundColor: Colors.transparent,
             child: Icon(
               Icons.rss_feed,
-              size: 40, // Adjust size as needed
-              color: Colors.white, // Customize color to match your design
+              size: 40,
+              color: Colors.white,
             ),
           ),
           SizedBox(width: 10),
@@ -158,15 +153,6 @@ class UserHeader extends StatelessWidget {
   }
 }
 
-class Tabs extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-    );
-  }
-}
-
 class TabButton extends StatelessWidget {
   final String text;
   final bool selected;
@@ -175,16 +161,22 @@ class TabButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () {
-        // Tab action
-      },
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 16,
-          color: selected ? Colors.white : Colors.grey,
-          fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: TextButton(
+        onPressed: () {
+          // Tab action
+        },
+        style: ButtonStyle(
+          backgroundColor: selected ? MaterialStateProperty.all(Colors.blue) : null,
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 16,
+            color: selected ? Colors.white : Colors.grey,
+            fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+          ),
         ),
       ),
     );

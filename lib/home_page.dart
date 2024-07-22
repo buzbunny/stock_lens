@@ -248,7 +248,7 @@ class WatchlistSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 130, // Reduced height for the watchlist section
+      height: 150, // Reduced height for the watchlist section
       child: Padding(
         padding: EdgeInsets.only(left: myWidth * 0.03),
         child: isRefreshing

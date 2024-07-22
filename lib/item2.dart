@@ -1,5 +1,7 @@
-import 'selectCoin.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // Import Provider package
+import 'selectCoin.dart';
+import 'watchlist_manager.dart'; // Import the WatchlistManager
 
 class Item2 extends StatelessWidget {
   final item;
@@ -37,9 +39,27 @@ class Item2 extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                  height: myHeight * 0.025, // Reduced height of the image container
-                  child: Image.network(item.image)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                      height: myHeight * 0.025, // Reduced height of the image container
+                      child: Image.network(item.image)),
+                  IconButton(
+                    icon: Icon(Icons.add, color: Colors.white),
+                    onPressed: () {
+                      // Add the item to the watchlist and show a Snackbar
+                      Provider.of<WatchlistManager>(context, listen: false).addCoin(item);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('${item.id} has been added to your watchlist'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
               const SizedBox(
                 height: 5, // Reduced vertical spacing
               ),
