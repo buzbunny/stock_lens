@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'navbar.dart';
 import 'about_us.dart';
 import 'terms_and_conditions.dart';
@@ -13,6 +14,78 @@ class _SettingsPageState extends State<SettingsPage> {
   bool isPushNotificationsEnabled = false;
   bool isBiometricEnabled = false;
   bool isDarkModeEnabled = false;
+  String _username = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUsername();
+  }
+
+  Future<void> _loadUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _username = prefs.getString('username') ?? 'Username not set';
+    });
+  }
+
+  Future<void> _updateUsername(String newUsername) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', newUsername);
+    setState(() {
+      _username = newUsername;
+    });
+  }
+
+  void _showEditUsernameDialog() {
+    TextEditingController _usernameController = TextEditingController(text: _username);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[850],
+          title: const Text(
+            'Edit Username',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: TextField(
+            controller: _usernameController,
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.green),
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                _updateUsername(_usernameController.text);
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Save',
+                style: TextStyle(color: Colors.green),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Route createFadeRoute(Widget page) {
     return PageRouteBuilder(
@@ -91,10 +164,10 @@ class _SettingsPageState extends State<SettingsPage> {
       body: ListView(
         padding: const EdgeInsets.only(top: 50.0, left: 16.0, right: 16.0),
         children: [
-          const Center(
+          Center(
             child: Column(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 50,
                   backgroundColor: Colors.white,
                   child: Icon(
@@ -103,28 +176,27 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(height: 10),
-                Text(
-                  'Jhon Abraham',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _username,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.white),
+                      onPressed: _showEditUsernameDialog,
+                    ),
+                  ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
               ],
             ),
-          ),
-          ListTile(
-            title: const Text(
-              'Change profile data',
-              style: TextStyle(color: Colors.white),
-            ),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
-            onTap: () {
-              // Handle change profile data action
-            },
           ),
           SwitchListTile(
             title: const Text(
@@ -136,19 +208,6 @@ class _SettingsPageState extends State<SettingsPage> {
             onChanged: (bool value) {
               setState(() {
                 isPushNotificationsEnabled = value;
-              });
-            },
-          ),
-          SwitchListTile(
-            title: const Text(
-              'Enable biometric',
-              style: TextStyle(color: Colors.white),
-            ),
-            value: isBiometricEnabled,
-            activeColor: Colors.green,
-            onChanged: (bool value) {
-              setState(() {
-                isBiometricEnabled = value;
               });
             },
           ),

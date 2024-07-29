@@ -11,6 +11,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'login.dart';
 import 'register.dart';
 import 'dart:io';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -22,8 +23,30 @@ class MyHttpOverrides extends HttpOverrides {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  AwesomeNotifications().initialize(
+    'resource:/assets/icon.png', // Replace with the name of your app icon resource
+    [
+      NotificationChannel(
+        channelKey: 'basic_channel',
+        channelName: 'Basic notifications',
+        channelDescription: 'Notification channel for basic tests',
+        ledColor: Colors.white,
+        importance: NotificationImportance.High,
+      ),
+    ],
+    debug: true,
+  );
+
+  // Request notification permissions
+  await AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+    if (!isAllowed) {
+      AwesomeNotifications().requestPermissionToSendNotifications();
+    }
+  });
+
   final prefs = await SharedPreferences.getInstance();
   final bool isRegistered = prefs.getBool('isRegistered') ?? false;
+
   
   runApp(MyApp(isRegistered: isRegistered));
 }

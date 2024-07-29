@@ -46,6 +46,7 @@ dependencies:
   shared_preferences: ^2.0.6
   url_launcher: ^6.0.9
   carousel_slider: ^4.0.0
+  awesome_notifications: ^0.9.3+1
   animated_text_kit: ^4.2.1
   flutter_launcher_icons: ^0.13.1
 flutter_launcher_icons:
