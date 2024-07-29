@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_down_button/pull_down_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 import 'search_page.dart';
 import 'api_call_manager.dart';
-import 'watchlist_manager.dart'; // Import the watchlist manager
-import 'watchList.dart'; // Import the WatchListPage
+import 'watchlist_manager.dart';
+import 'watchList.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'login.dart';
 import 'register.dart';
 import 'dart:io';
-
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -20,12 +20,18 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final bool isRegistered = prefs.getBool('isRegistered') ?? false;
+  
+  runApp(MyApp(isRegistered: isRegistered));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isRegistered;
+  
+  const MyApp({Key? key, required this.isRegistered}) : super(key: key);
 
   Route _createRoute(Widget page) {
     return PageRouteBuilder(
@@ -51,7 +57,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ApiCallManager()),
-        ChangeNotifierProvider(create: (context) => WatchlistManager()), // Add WatchlistManager provider
+        ChangeNotifierProvider(create: (context) => WatchlistManager()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -84,7 +90,7 @@ class MyApp extends StatelessWidget {
           ),
           primaryColor: const Color.fromARGB(255, 78, 172, 248),
         ),
-        home: LandingPage(),
+        home: isRegistered ? Home() : LandingPage(),
         routes: {
           '/home': (context) => Home(),
           '/search': (context) => SearchPage(),
@@ -106,7 +112,6 @@ class _LandingPageState extends State<LandingPage> {
     'assets/img1.avif',
     'assets/img2.jpg',
     'assets/img3.avif',
-    // Add more image paths
   ];
 
   Route _createRoute(Widget page) {
@@ -158,11 +163,11 @@ class _LandingPageState extends State<LandingPage> {
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [
-                  Colors.black, // Start with black at the bottom
-                  Colors.black.withOpacity(0.6), // Gradient transition
-                  Colors.transparent, // End with transparent at the top
+                  Colors.black,
+                  Colors.black.withOpacity(0.6),
+                  Colors.transparent,
                 ],
-                stops: [0.0, 0.5, 1.0], // Adjust to make gradient appear correctly
+                stops: [0.0, 0.5, 1.0],
               ),
             ),
           ),
@@ -205,26 +210,11 @@ class _LandingPageState extends State<LandingPage> {
                         horizontal: 100, vertical: 15),
                   ),
                   child: const Text(
-                    'Register Now',
+                    'Get Started',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                       color: Colors.white,
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      _createRoute(LoginPage()),
-                    );
-                  },
-                  child: const Text(
-                    'Already have an account? Log In',
-                    style: TextStyle(
-                      color: Colors.white,
-                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ),

@@ -6,6 +6,7 @@ import 'coinModel.dart';
 import 'item.dart';
 import 'item2.dart';
 import 'navbar.dart';
+import 'register.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -16,11 +17,20 @@ class _HomeState extends State<Home> {
   bool isRefreshing = true;
   List? coinMarket = [];
   static const String cacheKey = 'coinMarketCache';
+  String? _username;
 
   @override
   void initState() {
     super.initState();
     loadCachedData();
+    _loadUsername();
+  }
+
+  Future<void> _loadUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _username = prefs.getString('username') ?? 'User';
+    });
   }
 
   Future<void> loadCachedData() async {
@@ -81,8 +91,6 @@ class _HomeState extends State<Home> {
 
     if (index == 1) {
       Navigator.pushNamed(context, '/search');
-    } else if (index == 2) {
-      Navigator.pushNamed(context, '/settings');
     }
   }
 
@@ -109,7 +117,7 @@ class _HomeState extends State<Home> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      HeaderSection(myHeight: myHeight, myWidth: myWidth),
+                      HeaderSection(myHeight: myHeight, myWidth: myWidth, username: _username),
                       ActiveStockSection(isRefreshing: isRefreshing, coinMarket: coinMarket, myHeight: myHeight, myWidth: myWidth),
                       WatchlistSection(isRefreshing: isRefreshing, coinMarket: coinMarket, myHeight: myHeight, myWidth: myWidth),
                     ],
@@ -118,7 +126,7 @@ class _HomeState extends State<Home> {
               )
             : Center(
                 child: Text(
-                  _selectedIndex == 1 ? 'Search Screen' : 'Settings Screen',
+                  _selectedIndex == 1 ? 'Search Screen' : '',
                   style: TextStyle(fontSize: 24, color: Colors.white),
                 ),
               ),
@@ -136,10 +144,12 @@ class HeaderSection extends StatelessWidget {
     Key? key,
     required this.myHeight,
     required this.myWidth,
+    required this.username,
   }) : super(key: key);
 
   final double myHeight;
   final double myWidth;
+  final String? username;
 
   @override
   Widget build(BuildContext context) {
@@ -155,13 +165,13 @@ class HeaderSection extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Good Morning Julian!',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
+                     Text(
+                      'Good Morning ${username ?? 'User'}!',
+                      style: const TextStyle(fontSize: 20, color: Colors.white),
                     ),
                     SizedBox(height: myHeight * 0.01),
                     const Text(
-                      'IDR 12.480.000',
+                      'STOCKLENS',
                       style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                     const Text(
