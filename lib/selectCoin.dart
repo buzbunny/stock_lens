@@ -59,6 +59,23 @@ class _SelectCoinState extends State<SelectCoin> {
     double myWidth = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            ),
+        title: const Text(
+          'Chart',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.black,
+      ),
         body: Container(
           height: myHeight,
           width: myWidth,

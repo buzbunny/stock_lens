@@ -6,7 +6,7 @@ import 'home_page.dart';
 import 'search_page.dart';
 import 'api_call_manager.dart';
 import 'watchlist_manager.dart';
-import 'watchList.dart';
+// import 'watchList.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'login.dart';
 import 'register.dart';
@@ -27,11 +27,13 @@ void main() async {
     'resource:/assets/icon.png', // Replace with the name of your app icon resource
     [
       NotificationChannel(
-        channelKey: 'basic_channel',
-        channelName: 'Basic notifications',
-        channelDescription: 'Notification channel for basic tests',
+        channelKey: 'news_channel',
+        channelName: 'News notifications',
+        channelDescription: 'Notification channel for news updates',
         ledColor: Colors.white,
         importance: NotificationImportance.High,
+        playSound: true,
+        enableVibration: true,
       ),
     ],
     debug: true,

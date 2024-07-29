@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'navbar.dart';
 import 'about_us.dart';
 import 'terms_and_conditions.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -19,10 +20,10 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
-    _loadUsername();
+    _loadPreferences();
   }
 
-  Future<void> _loadUsername() async {
+  Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _username = prefs.getString('username') ?? 'Username not set';
@@ -197,19 +198,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 const SizedBox(height: 20),
               ],
             ),
-          ),
-          SwitchListTile(
-            title: const Text(
-              'Push notifications',
-              style: TextStyle(color: Colors.white),
-            ),
-            value: isPushNotificationsEnabled,
-            activeColor: Colors.green,
-            onChanged: (bool value) {
-              setState(() {
-                isPushNotificationsEnabled = value;
-              });
-            },
           ),
           SwitchListTile(
             title: const Text(

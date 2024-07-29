@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'navbar.dart'; // Import CustomNavBar from navbar.dart
+import 'package:awesome_notifications/awesome_notifications.dart';
+
 
 class NewsPage extends StatefulWidget {
   @override
@@ -14,11 +16,17 @@ class NewsPage extends StatefulWidget {
 class _NewsPageState extends State<NewsPage> {
   List articles = [];
 
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
-    loadCachedNews();
-    fetchNews();
+    initializeData();
+  }
+
+  Future<void> initializeData() async {
+    await loadCachedNews();
+    await fetchNews();
   }
 
   Future<void> loadCachedNews() async {
@@ -27,43 +35,62 @@ class _NewsPageState extends State<NewsPage> {
     if (cachedNews != null) {
       setState(() {
         articles = json.decode(cachedNews);
+        isLoading = false;
       });
     }
   }
 
   Future<void> fetchNews() async {
-    const apiKey = 'cq9f34pr01qlu7f2mbh0cq9f34pr01qlu7f2mbhg';
-    var headers = {
-      'apikey': apiKey,
-    };
+    setState(() {
+      isLoading = true;
+    });
 
-    var request = http.Request(
-      'GET',
-      Uri.parse(
-        'https://finnhub.io/api/v1/news?category=general&token=cq9f34pr01qlu7f2mbh0cq9f34pr01qlu7f2mbhg'
-      ),
-    );
+    try {
+      const apiKey = 'cq9f34pr01qlu7f2mbh0cq9f34pr01qlu7f2mbhg';
+      final response = await http.get(
+        Uri.parse('https://finnhub.io/api/v1/news?category=general'),
+        headers: {'X-Finnhub-Token': apiKey},
+      );
 
-    request.headers.addAll(headers);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
 
-    http.StreamedResponse response = await request.send();
+        if (data.isNotEmpty && articles.isNotEmpty && data[0]['id'] != articles.first['id']) {
+          notifyNewArticle(data[0]['headline'], data[0]['summary']);
+        }
 
-    if (response.statusCode == 200) {
-      String responseBody = await response.stream.bytesToString();
-      final List<dynamic> data = json.decode(responseBody); // Parse as a list
+        setState(() {
+          articles = data;
+          isLoading = false;
+        });
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('cachedNews', json.encode(articles));
+      } else {
+        throw Exception('Failed to load news: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching news: $e');
       setState(() {
-        articles = data;
+        isLoading = false;
       });
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('cachedNews', json.encode(articles));
-    } else {
-      throw Exception('Failed to load news');
     }
   }
 
   Future<void> handleRefresh() async {
     await fetchNews();
+  }
+
+  void notifyNewArticle(String title, String summary) {
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 10,
+        channelKey: 'news_channel',
+        title: title,
+        body: summary,
+        notificationLayout: NotificationLayout.Default,
+      ),
+    );
   }
 
   @override
@@ -129,6 +156,7 @@ class _NewsPageState extends State<NewsPage> {
     );
   }
 }
+
 
 class UserHeader extends StatelessWidget {
   @override
