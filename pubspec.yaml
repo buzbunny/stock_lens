@@ -46,6 +46,11 @@ dependencies:
   shared_preferences: ^2.0.6
   carousel_slider: ^4.0.0
   animated_text_kit: ^4.2.1
+  flutter_launcher_icons: ^0.13.1
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon.png"
   
 
 dev_dependencies:
@@ -71,6 +76,7 @@ flutter:
     - assets/img2.jpg
     - assets/img3.avif
     - assets/img4.jpg
+    - assets/icon.png
 
 
 
