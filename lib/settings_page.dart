@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'navbar.dart';
 import 'about_us.dart';
 import 'terms_and_conditions.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
+// import 'package:awesome_notifications/awesome_notifications.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -199,20 +199,20 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
           ),
-          SwitchListTile(
-            title: const Text(
-              'Enable dark mode',
-              style: TextStyle(color: Colors.white),
-            ),
-            value: isDarkModeEnabled,
-            activeColor: Colors.green,
-            onChanged: (bool value) {
-              setState(() {
-                isDarkModeEnabled = value;
-              });
-            },
-          ),
-          const Divider(color: Colors.white),
+          // SwitchListTile(
+          //   title: const Text(
+          //     'Enable dark mode',
+          //     style: TextStyle(color: Colors.white),
+          //   ),
+          //   value: isDarkModeEnabled,
+          //   activeColor: Colors.green,
+          //   onChanged: (bool value) {
+          //     setState(() {
+          //       isDarkModeEnabled = value;
+          //     });
+          //   },
+          // ),
+          // const Divider(color: Colors.white),
           ListTile(
             title: const Text(
               'About us',

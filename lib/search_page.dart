@@ -86,6 +86,8 @@ class _SearchPageState extends State<SearchPage> {
       return null;
     } finally {
       apiCallManager.setCanMakeApiCall(true);
+      // Update search frequency
+      await _updateSearchFrequency(query);
     }
   }
 
@@ -203,6 +205,7 @@ class _SearchPageState extends State<SearchPage> {
   // Helper methods for caching
 
   static const String _cacheKeyPrefix = 'coin_search_cache_';
+  static const String _frequencyKeyPrefix = 'coin_search_frequency_';
 
   Future<void> _saveToCache(String query, List<CoinModel> data) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -217,6 +220,13 @@ class _SearchPageState extends State<SearchPage> {
       return jsonStringList.map((jsonString) => CoinModel.fromJson(json.decode(jsonString))).toList();
     }
     return null;
+  }
+
+  Future<void> _updateSearchFrequency(String query) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String key = _frequencyKeyPrefix + query.toLowerCase();
+    int frequency = prefs.getInt(key) ?? 0;
+    await prefs.setInt(key, frequency + 1);
   }
 
   @override
