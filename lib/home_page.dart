@@ -6,7 +6,6 @@ import 'coinModel.dart';
 import 'item.dart';
 import 'item2.dart';
 import 'navbar.dart';
-import 'register.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -132,8 +131,10 @@ class _HomeState extends State<Home> {
               ),
       ),
       bottomNavigationBar: CustomNavBar(
-        onTap: _onItemTapped,
-        currentIndex: _selectedIndex,
+        currentIndex: 0,
+        onTap: (index) {
+          // Handle navigation
+        },
       ),
     );
   }
@@ -166,7 +167,7 @@ class HeaderSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                      Text(
-                      'Good Morning ${username ?? 'User'}!',
+                      'Welcome ${username ?? 'User'}!',
                       style: const TextStyle(fontSize: 20, color: Colors.white),
                     ),
                     SizedBox(height: myHeight * 0.01),
@@ -180,13 +181,13 @@ class HeaderSection extends StatelessWidget {
                     ),
                   ],
                 ),
-                Column(
-                  children: [
-                    Icon(Icons.account_balance_wallet_outlined, color: Colors.white, size: 30),
-                    SizedBox(height: myHeight * 0.02),
-                    Icon(Icons.history, color: Colors.white, size: 30),
-                  ],
-                ),
+                // Column(
+                //   children: [
+                //     Icon(Icons.account_balance_wallet_outlined, color: Colors.white, size: 30),
+                //     SizedBox(height: myHeight * 0.02),
+                //     Icon(Icons.history, color: Colors.white, size: 30),
+                //   ],
+                // ),
               ],
             ),
           ),

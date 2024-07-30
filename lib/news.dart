@@ -15,8 +15,10 @@ class NewsPage extends StatefulWidget {
 
 class _NewsPageState extends State<NewsPage> {
   List articles = [];
-
+  List filteredArticles = [];
   bool isLoading = true;
+  bool isSearching = false;
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -35,6 +37,7 @@ class _NewsPageState extends State<NewsPage> {
     if (cachedNews != null) {
       setState(() {
         articles = json.decode(cachedNews);
+        filteredArticles = articles;
         isLoading = false;
       });
     }
@@ -61,6 +64,7 @@ class _NewsPageState extends State<NewsPage> {
 
         setState(() {
           articles = data;
+          filteredArticles = articles;
           isLoading = false;
         });
 
@@ -93,23 +97,52 @@ class _NewsPageState extends State<NewsPage> {
     );
   }
 
+  void filterArticles(String query) {
+    List filteredList = articles.where((article) {
+      return article['headline'].toLowerCase().contains(query.toLowerCase());
+    }).toList();
+
+    setState(() {
+      filteredArticles = filteredList;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'News',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Colors.white,
-          ),
-        ),
+        title: isSearching
+            ? TextField(
+                controller: searchController,
+                decoration: const InputDecoration(
+                  hintText: 'Type your keywords here',
+                  hintStyle: TextStyle(color: Colors.white),
+                  border: InputBorder.none,
+                ),
+                style: TextStyle(color: Colors.white),
+                onChanged: (query) {
+                  filterArticles(query);
+                },
+              )
+            : const Text(
+                'News',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: Colors.white,
+                ),
+              ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: Icon(isSearching ? Icons.close : Icons.search),
             onPressed: () {
-              // Search action
+              setState(() {
+                if (isSearching) {
+                  searchController.clear();
+                  filterArticles('');
+                }
+                isSearching = !isSearching;
+              });
             },
           ),
         ],
@@ -133,7 +166,7 @@ class _NewsPageState extends State<NewsPage> {
               ),
               SizedBox(height: 10),
               Column(
-                children: articles.map((article) => NewsCard(
+                children: filteredArticles.map((article) => NewsCard(
                   title: article['headline'],
                   author: article['source'],
                   date: DateTime.fromMillisecondsSinceEpoch(article['datetime'] * 1000).toString(),
@@ -237,9 +270,11 @@ class NewsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        if (await canLaunch(url)) {
-          await launch(url);
+        final Uri uri = Uri.parse(url);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
         } else {
+          print('Could not launch $url');
           throw 'Could not launch $url';
         }
       },
