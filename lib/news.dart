@@ -321,6 +321,7 @@ void toggleArchiveView() {
                           comments: '',
                           likes: '',
                           url: article['url'],
+                          imageUrl: article['image'],
                           isSelected: selectedIndices.contains(index),
                         ),
                       );
@@ -415,6 +416,7 @@ class NewsCard extends StatelessWidget {
   final String comments;
   final String likes;
   final String url;
+  final String imageUrl;
   final bool isSelected;
 
   NewsCard({
@@ -425,6 +427,7 @@ class NewsCard extends StatelessWidget {
     required this.comments,
     required this.likes,
     required this.url,
+    required this.imageUrl, // Add this
     this.isSelected = false,
   });
 
@@ -445,30 +448,54 @@ class NewsCard extends StatelessWidget {
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Text(
-                title,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              // Display the image on the left
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                  image: DecorationImage(
+                    image: NetworkImage(imageUrl),
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
-              const SizedBox(height: 10),
-              Text(
-                'by $author, $date',
-                style: const TextStyle(color: Colors.grey),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  if (views.isNotEmpty) const Icon(Icons.remove_red_eye, size: 16, color: Colors.white),
-                  if (views.isNotEmpty) Text(views, style: const TextStyle(color: Colors.white)),
-                  const SizedBox(width: 10),
-                  if (comments.isNotEmpty) const Icon(Icons.comment, size: 16, color: Colors.white),
-                  if (comments.isNotEmpty) Text(comments, style: const TextStyle(color: Colors.white)),
-                  const SizedBox(width: 10),
-                  if (likes.isNotEmpty) const Icon(Icons.thumb_up, size: 16, color: Colors.white),
-                  if (likes.isNotEmpty) Text(likes, style: const TextStyle(color: Colors.white)),
-                ],
+              const SizedBox(width: 16.0), // Spacing between image and text
+              // Display the text content on the right
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'by $author, $date',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        if (views.isNotEmpty) const Icon(Icons.remove_red_eye, size: 16, color: Colors.white),
+                        if (views.isNotEmpty) Text(views, style: const TextStyle(color: Colors.white)),
+                        const SizedBox(width: 10),
+                        if (comments.isNotEmpty) const Icon(Icons.comment, size: 16, color: Colors.white),
+                        if (comments.isNotEmpty) Text(comments, style: const TextStyle(color: Colors.white)),
+                        const SizedBox(width: 10),
+                        if (likes.isNotEmpty) const Icon(Icons.thumb_up, size: 16, color: Colors.white),
+                        if (likes.isNotEmpty) Text(likes, style: const TextStyle(color: Colors.white)),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
