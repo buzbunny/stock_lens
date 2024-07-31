@@ -53,7 +53,7 @@ void onStart(ServiceInstance service) async {
 
   String title = "Default Title";
   String content = "Default Content";
-  int intervalSeconds = 1;
+  int intervalSeconds = 360;
 
   service.on('setNotificationData').listen((event) {
     title = event?['title'] ?? title;

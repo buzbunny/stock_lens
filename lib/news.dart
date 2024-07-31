@@ -5,11 +5,13 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'navbar.dart'; // Import CustomNavBar from navbar.dart
+import 'navbar.dart';
 import 'noti.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:math' as math;
-import 'back_service.dart'; // Import the background service
+import 'back_service.dart';
+import 'dart:async'; // Add this import
+
 
 class NewsPage extends StatefulWidget {
   @override
@@ -21,20 +23,35 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterL
 class _NewsPageState extends State<NewsPage> {
   List articles = [];
   List filteredArticles = [];
+  List archivedArticles = [];
   bool isLoading = true;
   bool isSearching = false;
+  bool isSelecting = false;
+  bool showingArchived = false;
   TextEditingController searchController = TextEditingController();
+  Set<int> selectedIndices = {};
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     initializeData();
     Noti.initialize(flutterLocalNotificationsPlugin);
-    initializeBackgroundService(); // Initialize the background service
+    initializeBackgroundService();
+
+    _timer = Timer.periodic(const Duration(seconds: 360), (Timer t) => fetchNews());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer when the widget is disposed
+    searchController.dispose(); // Dispose of the controller
+    super.dispose();
   }
 
   Future<void> initializeData() async {
     await loadCachedNews();
+    await loadArchivedNews();
     await fetchNews();
   }
 
@@ -42,7 +59,7 @@ class _NewsPageState extends State<NewsPage> {
     await initializeService(
       notificationTitle: 'Fetching News',
       notificationContent: 'The app is fetching the latest news in the background.',
-      intervalSeconds: 3600, // Set the interval as needed
+      intervalSeconds: 3600,
     );
   }
 
@@ -54,6 +71,16 @@ class _NewsPageState extends State<NewsPage> {
         articles = json.decode(cachedNews);
         filteredArticles = articles;
         isLoading = false;
+      });
+    }
+  }
+
+  Future<void> loadArchivedNews() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? archivedNews = prefs.getString('archivedNews');
+    if (archivedNews != null) {
+      setState(() {
+        archivedArticles = json.decode(archivedNews);
       });
     }
   }
@@ -122,7 +149,8 @@ class _NewsPageState extends State<NewsPage> {
   }
 
   void filterArticles(String query) {
-    List filteredList = articles.where((article) {
+    List filteredList = showingArchived ? archivedArticles : articles;
+    filteredList = filteredList.where((article) {
       return article['headline'].toLowerCase().contains(query.toLowerCase());
     }).toList();
 
@@ -130,6 +158,84 @@ class _NewsPageState extends State<NewsPage> {
       filteredArticles = filteredList;
     });
   }
+
+  void toggleSelection(int index) {
+  setState(() {
+    if (selectedIndices.contains(index)) {
+      selectedIndices.remove(index);
+    } else {
+      selectedIndices.add(index);
+    }
+    isSelecting = selectedIndices.isNotEmpty;
+  });
+}
+
+void archiveSelectedArticles() async {
+  List<dynamic> toArchive = [];
+  List<dynamic> remaining = [];
+
+  for (int i = 0; i < filteredArticles.length; i++) {
+    if (selectedIndices.contains(i)) {
+      toArchive.add(filteredArticles[i]);
+    } else {
+      remaining.add(filteredArticles[i]);
+    }
+  }
+
+  setState(() {
+    if (showingArchived) {
+      // Remove from archives and add back to articles
+      articles.addAll(toArchive);
+      archivedArticles.removeWhere((article) => toArchive.contains(article));
+    } else {
+      archivedArticles.addAll(toArchive);
+      articles = remaining;
+    }
+
+    filteredArticles = showingArchived ? archivedArticles : articles;
+    selectedIndices.clear();
+    isSelecting = false;
+  });
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('cachedNews', json.encode(articles));
+  await prefs.setString('archivedNews', json.encode(archivedArticles));
+}
+
+void deleteSelectedArticles() async {
+  List<dynamic> remaining = [];
+
+  for (int i = 0; i < filteredArticles.length; i++) {
+    if (!selectedIndices.contains(i)) {
+      remaining.add(filteredArticles[i]);
+    }
+  }
+
+  setState(() {
+    if (showingArchived) {
+      archivedArticles = remaining;
+    } else {
+      articles = remaining;
+    }
+    filteredArticles = remaining;
+    selectedIndices.clear();
+    isSelecting = false;
+  });
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('cachedNews', json.encode(articles));
+  await prefs.setString('archivedNews', json.encode(archivedArticles));
+}
+
+void toggleArchiveView() {
+  setState(() {
+    showingArchived = !showingArchived;
+    filteredArticles = showingArchived ? archivedArticles : articles;
+    selectedIndices.clear();
+    isSelecting = false;
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -148,8 +254,8 @@ class _NewsPageState extends State<NewsPage> {
                   filterArticles(query);
                 },
               )
-            : const Text(
-                'News',
+            : Text(
+                showingArchived ? 'Archived News' : 'News',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -157,51 +263,82 @@ class _NewsPageState extends State<NewsPage> {
                 ),
               ),
         actions: [
-          IconButton(
-            icon: Icon(isSearching ? Icons.close : Icons.search),
-            onPressed: () {
-              setState(() {
-                if (isSearching) {
-                  searchController.clear();
-                  filterArticles('');
-                }
-                isSearching = !isSearching;
-              });
-            },
-          ),
+          if (isSelecting)
+            IconButton(
+              icon: Icon(Icons.archive),
+              onPressed: archiveSelectedArticles,
+            ),
+          if (isSelecting)
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: deleteSelectedArticles,
+            ),
+          if (!isSelecting)
+            IconButton(
+              icon: Icon(isSearching ? Icons.close : Icons.search),
+              onPressed: () {
+                setState(() {
+                  if (isSearching) {
+                    searchController.clear();
+                    filterArticles('');
+                  }
+                  isSearching = !isSearching;
+                });
+              },
+            ),
         ],
       ),
       body: LiquidPullToRefresh(
         onRefresh: handleRefresh,
         showChildOpacityTransition: false,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              UserHeader(),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    TabButton(text: 'Today'),
-                    // Add more TabButtons as needed
-                  ],
-                ),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  UserHeader(),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        TabButton(text: 'Today'),
+                        // Add more TabButtons as needed
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Column(
+                    children: List.generate(filteredArticles.length, (index) {
+                      var article = filteredArticles[index];
+                      return GestureDetector(
+                        onLongPress: () => toggleSelection(index),
+                        child: NewsCard(
+                          title: article['headline'],
+                          author: article['source'],
+                          date: DateTime.fromMillisecondsSinceEpoch(article['datetime'] * 1000).toString(),
+                          views: '',
+                          comments: '',
+                          likes: '',
+                          url: article['url'],
+                          isSelected: selectedIndices.contains(index),
+                        ),
+                      );
+                    }),
+                  ),
+                ],
               ),
-              SizedBox(height: 10),
-              Column(
-                children: filteredArticles.map((article) => NewsCard(
-                  title: article['headline'],
-                  author: article['source'],
-                  date: DateTime.fromMillisecondsSinceEpoch(article['datetime'] * 1000).toString(),
-                  views: '',
-                  comments: '',
-                  likes: '',
-                  url: article['url'],
-                )).toList(),
+            ),
+            Positioned(
+              bottom: 80,
+              right: 16,
+              child: FloatingActionButton(
+                backgroundColor: Colors.grey[650],
+                child: Icon(showingArchived ? Icons.newspaper : Icons.archive),
+                onPressed: toggleArchiveView,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: CustomNavBar(
@@ -278,6 +415,7 @@ class NewsCard extends StatelessWidget {
   final String comments;
   final String likes;
   final String url;
+  final bool isSelected;
 
   NewsCard({
     required this.title,
@@ -287,23 +425,24 @@ class NewsCard extends StatelessWidget {
     required this.comments,
     required this.likes,
     required this.url,
+    this.isSelected = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        final Uri uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-        } else {
-          print('Could not launch $url');
-          throw 'Could not launch $url';
-        }
-      },
-      child: Card(
-        color: Colors.grey[850],
-        margin: const EdgeInsets.all(16.0),
+    return Card(
+      color: isSelected ? Colors.blue.withOpacity(0.3) : Colors.grey[850],
+      margin: const EdgeInsets.all(16.0),
+      child: InkWell(
+        onTap: () async {
+          final Uri uri = Uri.parse(url);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          } else {
+            print('Could not launch $url');
+            throw 'Could not launch $url';
+          }
+        },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
