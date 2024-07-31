@@ -5,13 +5,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'navbar.dart'; // Import CustomNavBar from navbar.dart
-import 'package:awesome_notifications/awesome_notifications.dart';
-
+// import 'package:workmanager/workmanager.dart';
+import 'noti.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:math' as math;
 
 class NewsPage extends StatefulWidget {
+
   @override
   _NewsPageState createState() => _NewsPageState();
 }
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
 
 class _NewsPageState extends State<NewsPage> {
   List articles = [];
@@ -24,6 +30,7 @@ class _NewsPageState extends State<NewsPage> {
   void initState() {
     super.initState();
     initializeData();
+    Noti.initialize(flutterLocalNotificationsPlugin);
   }
 
   Future<void> initializeData() async {
@@ -44,57 +51,52 @@ class _NewsPageState extends State<NewsPage> {
   }
 
   Future<void> fetchNews() async {
-    setState(() {
-      isLoading = true;
-    });
+  setState(() {
+    isLoading = true;
+  });
 
-    try {
-      const apiKey = 'cq9f34pr01qlu7f2mbh0cq9f34pr01qlu7f2mbhg';
-      final response = await http.get(
-        Uri.parse('https://finnhub.io/api/v1/news?category=general'),
-        headers: {'X-Finnhub-Token': apiKey},
-      );
+  try {
+    const apiKey = 'cq9f34pr01qlu7f2mbh0cq9f34pr01qlu7f2mbhg';
+    final response = await http.get(
+      Uri.parse('https://finnhub.io/api/v1/news?category=general'),
+      headers: {'X-Finnhub-Token': apiKey},
+    );
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
 
-        if (data.isNotEmpty && articles.isNotEmpty && data[0]['id'] != articles.first['id']) {
-          notifyNewArticle(data[0]['headline'], data[0]['summary']);
-        }
-
-        setState(() {
-          articles = data;
-          filteredArticles = articles;
-          isLoading = false;
-        });
-
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('cachedNews', json.encode(articles));
-      } else {
-        throw Exception('Failed to load news: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error fetching news: $e');
       setState(() {
+        articles = data;
+        filteredArticles = articles;
         isLoading = false;
       });
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('cachedNews', json.encode(articles));
+
+      for (var i = 0; i < math.min(5, articles.length); i++) {
+        var article = articles[i];
+        Noti.showBigTextNotification(
+          id: i,
+          title: article['headline'],
+          body: article['summary'] ?? 'No summary available',
+          fln: flutterLocalNotificationsPlugin,
+        );
+      }
+    } else {
+      throw Exception('Failed to load news: ${response.statusCode}');
     }
+  } catch (e) {
+    print('Error fetching news: $e');
+    setState(() {
+      isLoading = false;
+    });
   }
+}
+
 
   Future<void> handleRefresh() async {
     await fetchNews();
-  }
-
-  void notifyNewArticle(String title, String summary) {
-    AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: 10,
-        channelKey: 'news_channel',
-        title: title,
-        body: summary,
-        notificationLayout: NotificationLayout.Default,
-      ),
-    );
   }
 
   void filterArticles(String query) {

@@ -6,12 +6,11 @@ import 'home_page.dart';
 import 'search_page.dart';
 import 'api_call_manager.dart';
 import 'watchlist_manager.dart';
-// import 'watchList.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'login.dart';
 import 'register.dart';
 import 'dart:io';
-import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -23,39 +22,31 @@ class MyHttpOverrides extends HttpOverrides {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  AwesomeNotifications().initialize(
-    'resource:/assets/icon.png', // Replace with the name of your app icon resource
-    [
-      NotificationChannel(
-        channelKey: 'news_channel',
-        channelName: 'News notifications',
-        channelDescription: 'Notification channel for news updates',
-        ledColor: Colors.white,
-        importance: NotificationImportance.High,
-        playSound: true,
-        enableVibration: true,
-      ),
-    ],
-    debug: true,
-  );
 
-  // Request notification permissions
-  await AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-    if (!isAllowed) {
-      AwesomeNotifications().requestPermissionToSendNotifications();
-    }
-  });
+  HttpOverrides.global = MyHttpOverrides();
 
   final prefs = await SharedPreferences.getInstance();
   final bool isRegistered = prefs.getBool('isRegistered') ?? false;
 
-  
+  await _requestNotificationPermission();
+
   runApp(MyApp(isRegistered: isRegistered));
+}
+
+Future<void> _requestNotificationPermission() async {
+  final prefs = await SharedPreferences.getInstance();
+  final bool isNotificationPermissionRequested =
+      prefs.getBool('isNotificationPermissionRequested') ?? false;
+
+  if (!isNotificationPermissionRequested) {
+    await Permission.notification.request();
+    await prefs.setBool('isNotificationPermissionRequested', true);
+  }
 }
 
 class MyApp extends StatelessWidget {
   final bool isRegistered;
-  
+
   const MyApp({Key? key, required this.isRegistered}) : super(key: key);
 
   Route _createRoute(Widget page) {
