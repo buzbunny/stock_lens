@@ -1,14 +1,13 @@
-// back_service.dart
-import 'dart:ui';
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'dart:math' as math;
-import 'noti.dart'; 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'noti.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
@@ -43,17 +42,16 @@ Future<void> initializeService({
 @pragma('vm:entry-point')
 Future<bool> onIosBackground(ServiceInstance service) async {
   WidgetsFlutterBinding.ensureInitialized();
-  DartPluginRegistrant.ensureInitialized();
   return true;
 }
 
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
-  DartPluginRegistrant.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter is initialized
 
   String title = "Default Title";
   String content = "Default Content";
-  int intervalSeconds = 360;
+  int intervalSeconds = 60;
 
   service.on('setNotificationData').listen((event) {
     title = event?['title'] ?? title;
@@ -91,15 +89,20 @@ Future<void> fetchNewsAndUpdateNotification() async {
   );
 
   if (response.statusCode == 200) {
-    final List<dynamic> data = json.decode(response.body);
-    List newArticles = [];
+    final List<dynamic> newArticles = json.decode(response.body);
 
-    for (var article in data) {
-      newArticles.add(article);
-    }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> oldArticles = prefs.getStringList('news') ?? [];
 
-    for (var i = 0; i < math.min(5, newArticles.length); i++) {
-      var article = newArticles[i];
+    List<String> newHeadlines = newArticles.map((article) => article['headline'].toString()).toList();
+    List<String> uniqueNewArticles = newHeadlines.where((headline) => !oldArticles.contains(headline)).toList();
+
+    // Update the stored news with the new headlines
+    prefs.setStringList('news', [...oldArticles, ...uniqueNewArticles]);
+
+    // Show notifications for new articles
+    for (var i = 0; i < math.min(5, uniqueNewArticles.length); i++) {
+      var article = newArticles.firstWhere((article) => article['headline'] == uniqueNewArticles[i]);
       Noti.showBigTextNotification(
         id: i,
         title: article['headline'],

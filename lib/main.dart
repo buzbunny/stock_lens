@@ -11,6 +11,7 @@ import 'login.dart';
 import 'register.dart';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
+// import 'back_service.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -22,6 +23,7 @@ class MyHttpOverrides extends HttpOverrides {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // await initializeBackgroundService();
 
   HttpOverrides.global = MyHttpOverrides();
 
@@ -32,6 +34,16 @@ void main() async {
 
   runApp(MyApp(isRegistered: isRegistered));
 }
+
+// Future<void> initializeBackgroundService() async {
+//   await initializeService(
+//     notificationTitle: 'News Update',
+//     notificationContent: 'Fetching latest news',
+//     intervalSeconds: 60, // Fetch news every hour
+//     autoStart: true,
+//     isForegroundMode: true,
+//   );
+// }
 
 Future<void> _requestNotificationPermission() async {
   final prefs = await SharedPreferences.getInstance();
