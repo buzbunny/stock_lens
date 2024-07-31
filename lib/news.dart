@@ -1,3 +1,4 @@
+// news.dart
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -8,6 +9,7 @@ import 'navbar.dart'; // Import CustomNavBar from navbar.dart
 import 'noti.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:math' as math;
+import 'back_service.dart'; // Import the background service
 
 class NewsPage extends StatefulWidget {
   @override
@@ -28,11 +30,20 @@ class _NewsPageState extends State<NewsPage> {
     super.initState();
     initializeData();
     Noti.initialize(flutterLocalNotificationsPlugin);
+    initializeBackgroundService(); // Initialize the background service
   }
 
   Future<void> initializeData() async {
     await loadCachedNews();
     await fetchNews();
+  }
+
+  Future<void> initializeBackgroundService() async {
+    await initializeService(
+      notificationTitle: 'Fetching News',
+      notificationContent: 'The app is fetching the latest news in the background.',
+      intervalSeconds: 3600, // Set the interval as needed
+    );
   }
 
   Future<void> loadCachedNews() async {

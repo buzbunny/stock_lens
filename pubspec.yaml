@@ -43,6 +43,8 @@ dependencies:
   http: ^0.13.5
   flutter_local_notifications: ^17.2.1+2
   syncfusion_flutter_charts: ^20.4.48
+  flutter_background_service: ^2.4.6
+  flutter_background_service_android: ^3.0.3
   provider: ^6.0.0
   shared_preferences: ^2.0.6
   url_launcher: ^6.0.9
