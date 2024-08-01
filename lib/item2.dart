@@ -101,8 +101,8 @@ class Item2 extends StatelessWidget {
                       fontSize: 14,
                       fontWeight: FontWeight.normal,
                       color: item.marketCapChangePercentage24H >= 0
-                          ? colorScheme.secondary
-                          : colorScheme.error,
+                          ? Colors.green
+                          : Colors.red,
                     ),
                   ),
                 ],

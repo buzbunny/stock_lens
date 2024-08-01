@@ -61,16 +61,16 @@ class Item extends StatelessWidget {
                   data: item.sparklineIn7D.price,
                   lineWidth: 2.0,
                   lineColor: item.marketCapChangePercentage24H >= 0
-                      ? colorScheme.secondary
-                      : colorScheme.error,
+                      ? Colors.green
+                      : Colors.red,
                   fillMode: FillMode.below,
                   fillGradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     stops: const [0.0, 0.7],
                     colors: item.marketCapChangePercentage24H >= 0
-                        ? [colorScheme.secondary, colorScheme.secondary.withOpacity(0.2)]
-                        : [colorScheme.error, colorScheme.error.withOpacity(0.2)],
+                        ? [Colors.green, Colors.green.withOpacity(0.2)]
+                        : [Colors.red, Colors.red.withOpacity(0.2)],
                   ),
                 ),
               ),
@@ -96,8 +96,8 @@ class Item extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       color: item.marketCapChangePercentage24H >= 0
-                          ? colorScheme.secondary
-                          : colorScheme.error,
+                          ? Colors.green
+                          : Colors.red,
                     ),
                   ),
                 ],
