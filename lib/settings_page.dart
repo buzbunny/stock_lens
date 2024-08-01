@@ -48,7 +48,7 @@ class _SettingsPageState extends State<SettingsPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: colorScheme.background,
+          backgroundColor: colorScheme.primary,
           title: Text(
             'Edit Username',
             style: TextStyle(color: colorScheme.onBackground),
@@ -72,7 +72,7 @@ class _SettingsPageState extends State<SettingsPage> {
               },
               child: Text(
                 'Cancel',
-                style: TextStyle(color: colorScheme.error),
+                style: TextStyle(color: Colors.red),
               ),
             ),
             TextButton(
@@ -82,7 +82,7 @@ class _SettingsPageState extends State<SettingsPage> {
               },
               child: Text(
                 'Save',
-                style: TextStyle(color: colorScheme.primary),
+                style: TextStyle(color: Colors.green),
               ),
             ),
           ],
