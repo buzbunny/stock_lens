@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'navbar.dart';
+import '../widgets/navbar.dart';
 import 'about_us.dart';
 import 'terms_and_conditions.dart';
 // import 'package:awesome_notifications/awesome_notifications.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Import Provider package
-import 'selectCoin.dart';
-import 'watchlist_manager.dart'; // Import the WatchlistManager
+import '../pages/selectCoin.dart';
+import '../managers/watchlist_manager.dart'; // Import the WatchlistManager
 
 class Item2 extends StatelessWidget {
   final dynamic item;

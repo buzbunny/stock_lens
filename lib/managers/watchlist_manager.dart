@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'coinModel.dart'; // Adjust the import path as necessary
+import '../models/coinModel.dart'; // Adjust the import path as necessary
 
 class WatchlistManager with ChangeNotifier {
   static final WatchlistManager _instance = WatchlistManager._internal();

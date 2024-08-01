@@ -5,11 +5,11 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'navbar.dart';
-import 'noti.dart';
+import '../widgets/navbar.dart';
+import '../services/noti.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:math' as math;
-import 'back_service.dart';
+import '../services/back_service.dart';
 import 'dart:async';
 
 class NewsPage extends StatefulWidget {

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_down_button/pull_down_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'home_page.dart';
-import 'search_page.dart';
-import 'api_call_manager.dart';
-import 'watchlist_manager.dart';
+import '../pages/home_page.dart';
+import '../pages/search_page.dart';
+import '../managers/api_call_manager.dart';
+import '../managers/watchlist_manager.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'login.dart';
-import 'register.dart';
+import '../pages/login.dart';
+import '../pages/register.dart';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
-import 'light_theme.dart';
-import 'dark_theme.dart';
+import '../themes/light_theme.dart';
+import '../themes/dark_theme.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override

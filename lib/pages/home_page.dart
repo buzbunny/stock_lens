@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'coinModel.dart';
-import 'item.dart';
-import 'item2.dart';
-import 'navbar.dart';
+import '../models/coinModel.dart';
+import '../sub_pages/item.dart';
+import '../sub_pages/item2.dart';
+import '../widgets/navbar.dart';
 
 class Home extends StatefulWidget {
   @override

@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'navbar.dart';
-import 'watchlist_manager.dart';
+import '../widgets/navbar.dart';
+import '../managers/watchlist_manager.dart';
 import 'selectCoin.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'dart:async'; // Import for Timer

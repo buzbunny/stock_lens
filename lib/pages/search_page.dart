@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'api_call_manager.dart';
-import 'coinModel.dart';
-import 'navbar.dart';
+import '../managers/api_call_manager.dart';
+import '../models/coinModel.dart';
+import '../widgets/navbar.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'item2.dart';
+import '../sub_pages/item2.dart';
 
 class SearchPage extends StatefulWidget {
   @override

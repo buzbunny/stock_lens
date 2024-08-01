@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
-import 'search_page.dart';
-import 'settings_page.dart';
-import 'news.dart'; // Import your news page here
-import 'watchList.dart'; // Import your watchlist page here
+import '../pages/home_page.dart';
+import '../pages/search_page.dart';
+import '../pages/settings_page.dart';
+import '../pages/news.dart'; // Import your news page here
+import '../pages/watchList.dart'; // Import your watchlist page here
 
 class CustomNavBar extends StatelessWidget {
   final ValueChanged<int> onTap;
