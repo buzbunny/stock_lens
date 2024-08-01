@@ -17,8 +17,10 @@ class CustomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return BottomAppBar(
-      color: Colors.black,
+      color: colorScheme.background, // Use background color from theme
       shape: const CircularNotchedRectangle(),
       notchMargin: 8.0,
       child: Row(
@@ -35,15 +37,17 @@ class CustomNavBar extends StatelessWidget {
   }
 
   Widget _buildNavItem(BuildContext context, IconData icon, int index, Widget page) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return IconButton(
       icon: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: currentIndex == index ? EdgeInsets.all(8.0) : EdgeInsets.all(0.0),
         decoration: BoxDecoration(
-          color: currentIndex == index ? Colors.white.withOpacity(0.2) : Colors.transparent,
+          color: currentIndex == index ? colorScheme.primary.withOpacity(0.2) : Colors.transparent,
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, color: Colors.white),
+        child: Icon(icon, color: currentIndex == index ? colorScheme.secondary : colorScheme.onBackground),
       ),
       onPressed: () {
         onTap(index); // Notify parent widget

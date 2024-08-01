@@ -1,3 +1,5 @@
+// settings_page.dart
+
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,26 +41,27 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _showEditUsernameDialog() {
+    final colorScheme = Theme.of(context).colorScheme;
     TextEditingController _usernameController = TextEditingController(text: _username);
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.grey[850],
-          title: const Text(
+          backgroundColor: colorScheme.background,
+          title: Text(
             'Edit Username',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: colorScheme.onBackground),
           ),
           content: TextField(
             controller: _usernameController,
-            style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(
+            style: TextStyle(color: colorScheme.onBackground),
+            decoration: InputDecoration(
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
+                borderSide: BorderSide(color: colorScheme.onBackground.withOpacity(0.5)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.green),
+                borderSide: BorderSide(color: colorScheme.primary),
               ),
             ),
           ),
@@ -67,9 +70,9 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text(
+              child: Text(
                 'Cancel',
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: colorScheme.error),
               ),
             ),
             TextButton(
@@ -77,9 +80,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 _updateUsername(_usernameController.text);
                 Navigator.of(context).pop();
               },
-              child: const Text(
+              child: Text(
                 'Save',
-                style: TextStyle(color: Colors.green),
+                style: TextStyle(color: colorScheme.primary),
               ),
             ),
           ],
@@ -107,37 +110,37 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _showLogoutConfirmationDialog() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.grey[850],
-          title: const Text(
+          backgroundColor: colorScheme.primary,
+          title: Text(
             'Confirm Exit',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: colorScheme.onBackground),
           ),
-          content: const Text(
+          content: Text(
             'Are you sure you want to close the app?',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: colorScheme.onBackground),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text(
+              child: Text(
                 'Cancel',
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: colorScheme.error),
               ),
             ),
             TextButton(
               onPressed: () {
-                // Close the dialog
                 Navigator.of(context).pop();
-                // Close the app
                 exit(0); // Use exit(0) to close the app
               },
-              child: const Text(
+              child: Text(
                 'Yes',
                 style: TextStyle(color: Colors.green),
               ),
@@ -150,17 +153,20 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        automaticallyImplyLeading: false,
+        title: Text(
           'Settings',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
-            color: Colors.white,
+            color: colorScheme.onBackground,
           ),
         ),
-        backgroundColor: Colors.black,
+        backgroundColor: colorScheme.background,
       ),
       body: ListView(
         padding: const EdgeInsets.only(top: 50.0, left: 16.0, right: 16.0),
@@ -168,13 +174,13 @@ class _SettingsPageState extends State<SettingsPage> {
           Center(
             child: Column(
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 50,
-                  backgroundColor: Colors.white,
+                  backgroundColor: colorScheme.secondary,
                   child: Icon(
                     Icons.person,
                     size: 70,
-                    color: Colors.black,
+                    color: colorScheme.onSecondary,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -183,14 +189,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   children: [
                     Text(
                       _username,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: colorScheme.onBackground,
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.white),
+                      icon: Icon(Icons.edit, color: colorScheme.onBackground),
                       onPressed: _showEditUsernameDialog,
                     ),
                   ],
@@ -199,48 +205,32 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
           ),
-          // SwitchListTile(
-          //   title: const Text(
-          //     'Enable dark mode',
-          //     style: TextStyle(color: Colors.white),
-          //   ),
-          //   value: isDarkModeEnabled,
-          //   activeColor: Colors.green,
-          //   onChanged: (bool value) {
-          //     setState(() {
-          //       isDarkModeEnabled = value;
-          //     });
-          //   },
-          // ),
-          // const Divider(color: Colors.white),
           ListTile(
-            title: const Text(
+            title: Text(
               'About us',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: colorScheme.onBackground),
             ),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+            trailing: Icon(Icons.arrow_forward_ios, color: colorScheme.onBackground),
             onTap: () {
-              // Handle about us action
               Navigator.of(context).push(createFadeRoute(AboutUsPage()));
             },
           ),
           ListTile(
-            title: const Text(
+            title: Text(
               'Terms and conditions',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: colorScheme.onBackground),
             ),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+            trailing: Icon(Icons.arrow_forward_ios, color: colorScheme.onBackground),
             onTap: () {
-              // Handle terms and conditions action
               Navigator.of(context).push(createFadeRoute(TermsAndConditions()));
             },
           ),
           ListTile(
-            title: const Text(
+            title: Text(
               'Exit',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: colorScheme.onBackground),
             ),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+            trailing: Icon(Icons.arrow_forward_ios, color: colorScheme.onBackground),
             onTap: _showLogoutConfirmationDialog,
           ),
         ],

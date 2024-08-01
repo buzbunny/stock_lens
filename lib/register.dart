@@ -49,7 +49,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onBackground),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -62,7 +62,8 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -70,10 +71,10 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Get Started',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onBackground,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -83,15 +84,15 @@ class _RegisterPageState extends State<RegisterPage> {
                 children: [
                   TextField(
                     controller: _fullNameController,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
                     decoration: InputDecoration(
                       labelText: 'Username',
-                      labelStyle: const TextStyle(color: Colors.white),
+                      labelStyle: TextStyle(color: Theme.of(context).colorScheme.onBackground),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey),
+                        borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
+                        borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                       ),
                       errorText: !_isFullNameValid && _fullNameController.text.isNotEmpty
                           ? 'Username should start with a letter and contain only letters, numbers, and underscores'
@@ -111,7 +112,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isFormValid ? Colors.green : Colors.grey,
+                  backgroundColor: _isFormValid
+                      ? Colors.green
+                      : Colors.grey,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),

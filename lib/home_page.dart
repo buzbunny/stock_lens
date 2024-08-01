@@ -111,7 +111,10 @@ class _HomeState extends State<Home> {
                     gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [Colors.black, Colors.grey[900]!]),
+                        colors: [
+                          Theme.of(context).colorScheme.background,
+                          Theme.of(context).colorScheme.surface,
+                        ]),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -126,15 +129,13 @@ class _HomeState extends State<Home> {
             : Center(
                 child: Text(
                   _selectedIndex == 1 ? 'Search Screen' : '',
-                  style: TextStyle(fontSize: 24, color: Colors.white),
+                  style: TextStyle(fontSize: 24, color: Theme.of(context).colorScheme.onBackground),
                 ),
               ),
       ),
       bottomNavigationBar: CustomNavBar(
-        currentIndex: 0,
-        onTap: (index) {
-          // Handle navigation
-        },
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -166,28 +167,25 @@ class HeaderSection extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                     Text(
+                    Text(
                       'Welcome ${username ?? 'User'}!',
-                      style: const TextStyle(fontSize: 20, color: Colors.white),
+                      style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.onBackground),
                     ),
                     SizedBox(height: myHeight * 0.01),
-                    const Text(
+                    Text(
                       'STOCKLENS',
-                      style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
                     ),
-                    const Text(
+                    Text(
                       'Active markets',
                       style: TextStyle(fontSize: 16, color: Colors.green),
                     ),
                   ],
                 ),
-                // Column(
-                //   children: [
-                //     Icon(Icons.account_balance_wallet_outlined, color: Colors.white, size: 30),
-                //     SizedBox(height: myHeight * 0.02),
-                //     Icon(Icons.history, color: Colors.white, size: 30),
-                //   ],
-                // ),
               ],
             ),
           ),
@@ -216,17 +214,15 @@ class ActiveStockSection extends StatelessWidget {
     return Expanded(
       child: isRefreshing
           ? const Center(
-              child: CircularProgressIndicator(
-                color: Colors.white,
-              ),
+              child: CircularProgressIndicator(),
             )
           : coinMarket == null || coinMarket!.isEmpty
               ? Padding(
                   padding: EdgeInsets.all(myHeight * 0.06),
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'Attention this API is free, so you cannot send multiple requests per second, please wait and try again later.',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                      'Attention: This API is free, so you cannot send multiple requests per second. Please wait and try again later.',
+                      style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.onBackground),
                     ),
                   ),
                 )
@@ -264,17 +260,15 @@ class WatchlistSection extends StatelessWidget {
         padding: EdgeInsets.only(left: myWidth * 0.03),
         child: isRefreshing
             ? const Center(
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                ),
+                child: CircularProgressIndicator(),
               )
             : coinMarket == null || coinMarket!.isEmpty
                 ? Padding(
                     padding: EdgeInsets.all(myHeight * 0.06),
-                    child: const Center(
+                    child: Center(
                       child: Text(
-                        'Attention this API is free, so you cannot send multiple requests per second, please wait and try again later.',
-                        style: TextStyle(fontSize: 18, color: Colors.white),
+                        'Attention: This API is free, so you cannot send multiple requests per second. Please wait and try again later.',
+                        style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.onBackground),
                       ),
                     ),
                   )

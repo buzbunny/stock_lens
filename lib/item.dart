@@ -1,13 +1,14 @@
-// item.dart
 import 'package:flutter/material.dart';
 import 'package:chart_sparkline/chart_sparkline.dart';
 
 class Item extends StatelessWidget {
-  final item;
+  final dynamic item;
+
   Item({this.item});
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     double myHeight = MediaQuery.of(context).size.height;
     double myWidth = MediaQuery.of(context).size.width;
 
@@ -32,14 +33,19 @@ class Item extends StatelessWidget {
                 children: [
                   Text(
                     item.id,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onBackground,
+                    ),
                   ),
                   Text(
                     '0.4 ' + item.symbol,
-                    style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.normal,
+                      color: colorScheme.onBackground,
+                    ),
                   ),
                 ],
               ),
@@ -55,16 +61,17 @@ class Item extends StatelessWidget {
                   data: item.sparklineIn7D.price,
                   lineWidth: 2.0,
                   lineColor: item.marketCapChangePercentage24H >= 0
-                      ? Colors.green
-                      : Colors.red,
+                      ? colorScheme.secondary
+                      : colorScheme.error,
                   fillMode: FillMode.below,
                   fillGradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      stops: const [0.0, 0.7],
-                      colors: item.marketCapChangePercentage24H >= 0
-                          ? [Colors.green, Colors.green.shade100]
-                          : [Colors.red, Colors.red.shade100]),
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: const [0.0, 0.7],
+                    colors: item.marketCapChangePercentage24H >= 0
+                        ? [colorScheme.secondary, colorScheme.secondary.withOpacity(0.2)]
+                        : [colorScheme.error, colorScheme.error.withOpacity(0.2)],
+                  ),
                 ),
               ),
             ),
@@ -78,18 +85,20 @@ class Item extends StatelessWidget {
                 children: [
                   Text(
                     item.currentPrice.toString(),
-                    style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onBackground,
+                    ),
                   ),
                   Text(
                     item.marketCapChangePercentage24H.toString() + '%',
                     style: TextStyle(
-                        fontSize: 16,
-                        color: item.marketCapChangePercentage24H >= 0
-                            ? Colors.green
-                            : Colors.red),
+                      fontSize: 16,
+                      color: item.marketCapChangePercentage24H >= 0
+                          ? colorScheme.secondary
+                          : colorScheme.error,
+                    ),
                   ),
                 ],
               ),

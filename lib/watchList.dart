@@ -1,3 +1,5 @@
+// watch_list.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'navbar.dart';
@@ -46,14 +48,18 @@ class _WatchListPageState extends State<WatchListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: colorScheme.background,
         title: Text(
           'My Watchlist',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
-            color: Colors.white,
+            color: colorScheme.onBackground,
           ),
         ),
       ),
@@ -63,11 +69,13 @@ class _WatchListPageState extends State<WatchListPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error loading watchlist'));
+            return Center(child: Text('Error loading watchlist', style: TextStyle(color: colorScheme.error)));
           } else {
             return LiquidPullToRefresh(
               onRefresh: _handleRefresh,
               showChildOpacityTransition: false,
+              color: colorScheme.primary,
+              backgroundColor: colorScheme.background,
               child: Consumer<WatchlistManager>(
                 builder: (context, manager, child) {
                   return ListView.builder(
@@ -80,14 +88,13 @@ class _WatchListPageState extends State<WatchListPage> {
                           coin.name,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: colorScheme.onBackground,
                           ),
                         ),
                         subtitle: Text(
                           'Price: \$${coin.currentPrice}',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: colorScheme.onBackground.withOpacity(0.7),
                           ),
                         ),
                         onTap: () {
@@ -99,7 +106,7 @@ class _WatchListPageState extends State<WatchListPage> {
                           );
                         },
                         trailing: IconButton(
-                          icon: Icon(Icons.remove_circle, color: Colors.red),
+                          icon: Icon(Icons.remove_circle, color: colorScheme.error),
                           onPressed: () {
                             setState(() {
                               WatchlistManager().removeCoin(coin);
@@ -107,7 +114,21 @@ class _WatchListPageState extends State<WatchListPage> {
 
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('${coin.name} has been removed from the watchlist.'),
+                                content: Text(
+                                  '${coin.name} has been removed from the watchlist.',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+
+                                backgroundColor: colorScheme.primary,
+                                action: SnackBarAction(
+                                  label: 'Undo',
+                                  textColor: Colors.white,
+                                  onPressed: () {
+                                    // Code to undo the change
+                                  },
+                                ),
                               ),
                             );
                           },

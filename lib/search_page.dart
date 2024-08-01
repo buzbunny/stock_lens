@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences
+import 'package:shared_preferences/shared_preferences.dart';
 import 'api_call_manager.dart';
 import 'coinModel.dart';
 import 'navbar.dart';
@@ -19,7 +19,7 @@ class _SearchPageState extends State<SearchPage> {
   bool isSearching = false;
   List<CoinModel>? searchResults;
   final TextEditingController _searchController = TextEditingController();
-  bool _shouldRefresh = true; // Flag to indicate when to refresh
+  bool _shouldRefresh = true;
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _onSearchTextChanged() {
-    _shouldRefresh = true; // Trigger refresh when text changes
+    _shouldRefresh = true;
     _onSearch(_searchController.text);
   }
 
@@ -44,7 +44,6 @@ class _SearchPageState extends State<SearchPage> {
 
     apiCallManager.setCanMakeApiCall(false);
 
-    // Check cache first
     List<CoinModel>? cachedResults = await _getFromCache(query);
     if (cachedResults != null && !_shouldRefresh) {
       return cachedResults;
@@ -68,10 +67,9 @@ class _SearchPageState extends State<SearchPage> {
       if (response.statusCode == 200) {
         var coinList = coinModelFromJson(response.body);
 
-        // Cache the results
         await _saveToCache(query, coinList);
 
-        _shouldRefresh = false; // Reset refresh flag
+        _shouldRefresh = false;
 
         return coinList.where((coin) => coin.name.toLowerCase().contains(query.toLowerCase())).toList();
       } else {
@@ -86,7 +84,6 @@ class _SearchPageState extends State<SearchPage> {
       return null;
     } finally {
       apiCallManager.setCanMakeApiCall(true);
-      // Update search frequency
       await _updateSearchFrequency(query);
     }
   }
@@ -111,6 +108,9 @@ class _SearchPageState extends State<SearchPage> {
     double myHeight = MediaQuery.of(context).size.height;
     double myWidth = MediaQuery.of(context).size.width;
 
+    // Accessing color scheme
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       body: SafeArea(
         child: LiquidPullToRefresh(
@@ -124,36 +124,36 @@ class _SearchPageState extends State<SearchPage> {
                   controller: _searchController,
                   decoration: InputDecoration(
                     hintText: 'Search for a coin...',
-                    hintStyle: TextStyle(color: Colors.white54),
-                    prefixIcon: Icon(Icons.search, color: Colors.white54),
+                    hintStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
+                    prefixIcon: Icon(Icons.search, color: colorScheme.onSurface.withOpacity(0.6)),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
                       borderSide: BorderSide.none,
                     ),
                     filled: true,
-                    fillColor: Colors.grey[800],
+                    fillColor: colorScheme.primary,
                   ),
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: colorScheme.onSurface),
                 ),
               ),
               isSearching
-                  ? const Center(
+                  ? Center(
                       child: CircularProgressIndicator(
-                        color: Colors.white,
+                        color: colorScheme.primary,
                       ),
                     )
                   : searchResults == null
                       ? Center(
                           child: Text(
                             'Search for a coin to see results',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
+                            style: TextStyle(fontSize: 18, color: colorScheme.onSurface),
                           ),
                         )
                       : searchResults!.isEmpty
                           ? Center(
                               child: Text(
                                 'Coin doesn\'t exist.',
-                                style: TextStyle(fontSize: 18, color: Colors.white),
+                                style: TextStyle(fontSize: 18, color: colorScheme.error),
                               ),
                             )
                           : Expanded(
@@ -162,7 +162,6 @@ class _SearchPageState extends State<SearchPage> {
                                 itemBuilder: (context, index) {
                                   return GestureDetector(
                                     onTap: () {
-                                      // Handle tapping on a coin item if needed
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(builder: (context) => Item2(item: searchResults![index])),
@@ -232,8 +231,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    
-    // Check if the page is becoming active and refresh if needed
+
     if (ModalRoute.of(context)?.isCurrent == true && _shouldRefresh) {
       _onSearch(_searchController.text);
     }

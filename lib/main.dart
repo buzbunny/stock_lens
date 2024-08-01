@@ -11,7 +11,8 @@ import 'login.dart';
 import 'register.dart';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
-// import 'back_service.dart';
+import 'light_theme.dart';
+import 'dark_theme.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -23,7 +24,6 @@ class MyHttpOverrides extends HttpOverrides {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await initializeBackgroundService();
 
   HttpOverrides.global = MyHttpOverrides();
 
@@ -34,16 +34,6 @@ void main() async {
 
   runApp(MyApp(isRegistered: isRegistered));
 }
-
-// Future<void> initializeBackgroundService() async {
-//   await initializeService(
-//     notificationTitle: 'News Update',
-//     notificationContent: 'Fetching latest news',
-//     intervalSeconds: 60, // Fetch news every hour
-//     autoStart: true,
-//     isForegroundMode: true,
-//   );
-// }
 
 Future<void> _requestNotificationPermission() async {
   final prefs = await SharedPreferences.getInstance();
@@ -89,35 +79,9 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          dividerColor: const Color.fromARGB(255, 52, 52, 52),
-          extensions: const [
-            PullDownButtonTheme(
-              dividerTheme: PullDownMenuDividerTheme(
-                dividerColor: Color.fromARGB(255, 21, 21, 21),
-                largeDividerColor: Color.fromARGB(255, 21, 21, 21),
-              ),
-              routeTheme: PullDownMenuRouteTheme(
-                backgroundColor: Color.fromARGB(255, 31, 31, 31),
-              ),
-              itemTheme: PullDownMenuItemTheme(
-                destructiveColor: Colors.red,
-                textStyle: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
-          scaffoldBackgroundColor: Colors.black,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.black,
-          ),
-          dividerTheme: const DividerThemeData(
-            thickness: 0.8,
-            color: Color.fromARGB(255, 52, 52, 52),
-          ),
-          primaryColor: const Color.fromARGB(255, 78, 172, 248),
-        ),
+        theme: lightTheme,
+        darkTheme: darkTheme,
+        themeMode: ThemeMode.system,
         home: isRegistered ? Home() : LandingPage(),
         routes: {
           '/home': (context) => Home(),
@@ -191,8 +155,8 @@ class _LandingPageState extends State<LandingPage> {
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [
-                  Colors.black,
-                  Colors.black.withOpacity(0.6),
+                  Theme.of(context).colorScheme.background,
+                  Theme.of(context).colorScheme.background.withOpacity(0.6),
                   Colors.transparent,
                 ],
                 stops: [0.0, 0.5, 1.0],
@@ -206,20 +170,20 @@ class _LandingPageState extends State<LandingPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   'Empower Your Investments with Real-Time Insights',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onBackground,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
-                const Text(
+                Text(
                   'Discover the Power of Stocks',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onBackground,
                     fontSize: 16,
                   ),
                   textAlign: TextAlign.center,

@@ -7,7 +7,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'chartModel.dart';
 
 class SelectCoin extends StatefulWidget {
-  var selectItem;
+  final dynamic selectItem;
 
   SelectCoin({this.selectItem});
 
@@ -55,27 +55,29 @@ class _SelectCoinState extends State<SelectCoin> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     double myHeight = MediaQuery.of(context).size.height;
     double myWidth = MediaQuery.of(context).size.width;
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: colorScheme.onBackground),
             onPressed: () {
               Navigator.pop(context);
             },
-            ),
-        title: const Text(
-          'Chart',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Colors.white,
           ),
+          // title: const Text(
+          //   'Chart',
+          //   style: TextStyle(
+          //     fontWeight: FontWeight.bold,
+          //     fontSize: 20,
+          //     color: Colors.white,
+          //   ),
+          // ),
+          backgroundColor: colorScheme.background,
         ),
-        backgroundColor: Colors.black,
-      ),
         body: Container(
           height: myHeight,
           width: myWidth,
@@ -93,8 +95,7 @@ class _SelectCoinState extends State<SelectCoin> {
                           children: [
                             Container(
                                 height: myHeight * 0.08,
-                                child:
-                                    Image.network(widget.selectItem.image)),
+                                child: Image.network(widget.selectItem.image)),
                             SizedBox(
                               width: myWidth * 0.03,
                             ),
@@ -106,7 +107,7 @@ class _SelectCoinState extends State<SelectCoin> {
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.white),
+                                      color: colorScheme.onBackground),
                                 ),
                                 SizedBox(
                                   height: myHeight * 0.01,
@@ -116,7 +117,7 @@ class _SelectCoinState extends State<SelectCoin> {
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.normal,
-                                      color: Colors.white),
+                                      color: colorScheme.onBackground),
                                 ),
                               ],
                             ),
@@ -130,21 +131,17 @@ class _SelectCoinState extends State<SelectCoin> {
                               style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.normal,
-                                  color: Colors.white),
+                                  color: colorScheme.onBackground),
                             ),
                             SizedBox(
                               height: myHeight * 0.01,
                             ),
                             Text(
-                              widget.selectItem.marketCapChangePercentage24H
-                                      .toString() +
-                                  '%',
+                              widget.selectItem.marketCapChangePercentage24H.toString() + '%',
                               style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.normal,
-                                  color: widget.selectItem
-                                              .marketCapChangePercentage24H >=
-                                          0
+                                  color: widget.selectItem.marketCapChangePercentage24H >= 0
                                       ? Colors.green
                                       : Colors.red),
                             ),
@@ -163,22 +160,21 @@ class _SelectCoinState extends State<SelectCoin> {
                         Container(
                           height: myHeight * 0.4,
                           width: myWidth,
-                          child: isRefresh == true
+                          child: isRefresh
                               ? Center(
                                   child: CircularProgressIndicator(
-                                    color: Colors.grey[800],
+                                    color: colorScheme.secondary,
                                   ),
                                 )
                               : itemChart == null
                                   ? Padding(
-                                      padding:
-                                          EdgeInsets.all(myHeight * 0.06),
+                                      padding: EdgeInsets.all(myHeight * 0.06),
                                       child: Center(
                                         child: Text(
                                           'Attention this Api is free, so you cannot send multiple requests per second, please wait and try again later.',
                                           style: TextStyle(
                                               fontSize: 18,
-                                              color: Colors.white),
+                                              color: colorScheme.onBackground),
                                         ),
                                       ),
                                     )
@@ -194,21 +190,11 @@ class _SelectCoinState extends State<SelectCoin> {
                                             bullColor: Colors.green,
                                             bearColor: Colors.red,
                                             dataSource: itemChart!,
-                                            xValueMapper:
-                                                (ChartModel sales, _) =>
-                                                    sales.time,
-                                            lowValueMapper:
-                                                (ChartModel sales, _) =>
-                                                    sales.low,
-                                            highValueMapper:
-                                                (ChartModel sales, _) =>
-                                                    sales.high,
-                                            openValueMapper:
-                                                (ChartModel sales, _) =>
-                                                    sales.open,
-                                            closeValueMapper:
-                                                (ChartModel sales, _) =>
-                                                    sales.close,
+                                            xValueMapper: (ChartModel sales, _) => sales.time,
+                                            lowValueMapper: (ChartModel sales, _) => sales.low,
+                                            highValueMapper: (ChartModel sales, _) => sales.high,
+                                            openValueMapper: (ChartModel sales, _) => sales.open,
+                                            closeValueMapper: (ChartModel sales, _) => sales.close,
                                             animationDuration: 55)
                                       ],
                                     ),
@@ -230,15 +216,7 @@ class _SelectCoinState extends State<SelectCoin> {
                                   child: GestureDetector(
                                     onTap: () {
                                       setState(() {
-                                        textBool = [
-                                          false,
-                                          false,
-                                          false,
-                                          false,
-                                          false,
-                                          false
-                                        ];
-                                        textBool[index] = true;
+                                        textBool = List.generate(text.length, (i) => i == index);
                                       });
                                       setDays(text[index]);
                                       getChart();
@@ -249,14 +227,14 @@ class _SelectCoinState extends State<SelectCoin> {
                                           vertical: myHeight * 0.005),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(5),
-                                        color: textBool[index] == true
-                                            ? Color(0xffFBC700).withOpacity(0.7)
+                                        color: textBool[index]
+                                            ? colorScheme.primary.withOpacity(0.7)
                                             : Colors.transparent,
                                       ),
                                       child: Text(
                                         text[index],
                                         style: TextStyle(
-                                            fontSize: 18, color: Colors.white),
+                                            fontSize: 18, color: colorScheme.onBackground),
                                       ),
                                     ),
                                   ),
@@ -315,7 +293,7 @@ class _SelectCoinState extends State<SelectCoin> {
                     (BuildContext context, ScrollController scrollController) {
                   return Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[900],
+                      color: colorScheme.surface,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(20),
                         topRight: Radius.circular(20),
@@ -336,7 +314,7 @@ class _SelectCoinState extends State<SelectCoin> {
                                 style: TextStyle(
                                     fontSize: 30,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white),
+                                    color: Colors.grey),
                               ),
                               SizedBox(
                                 height: myHeight * 0.02,
@@ -356,7 +334,7 @@ class _SelectCoinState extends State<SelectCoin> {
                                 style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.normal,
-                                    color: Colors.white),
+                                    color: colorScheme.onBackground),
                               ),
                               SizedBox(
                                 height: myHeight * 0.02,
@@ -376,7 +354,7 @@ class _SelectCoinState extends State<SelectCoin> {
                                 style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.normal,
-                                    color: Colors.white),
+                                    color: colorScheme.onBackground),
                               ),
                               SizedBox(
                                 height: myHeight * 0.02,
@@ -393,13 +371,12 @@ class _SelectCoinState extends State<SelectCoin> {
                               ),
                               Text(
                                 '\$' +
-                                    widget.selectItem.totalVolume
-                                        .toString() +
+                                    widget.selectItem.totalVolume.toString() +
                                     'M',
                                 style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.normal,
-                                    color: Colors.white),
+                                    color: colorScheme.onBackground),
                               ),
                             ],
                           ),

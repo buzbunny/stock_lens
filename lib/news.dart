@@ -10,8 +10,7 @@ import 'noti.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:math' as math;
 import 'back_service.dart';
-import 'dart:async'; // Add this import
-
+import 'dart:async';
 
 class NewsPage extends StatefulWidget {
   @override
@@ -44,8 +43,8 @@ class _NewsPageState extends State<NewsPage> {
 
   @override
   void dispose() {
-    _timer?.cancel(); // Cancel the timer when the widget is disposed
-    searchController.dispose(); // Dispose of the controller
+    _timer?.cancel();
+    searchController.dispose();
     super.dispose();
   }
 
@@ -100,7 +99,6 @@ class _NewsPageState extends State<NewsPage> {
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
 
-        // Load cached articles to compare
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String? cachedNews = prefs.getString('cachedNews');
         List cachedArticles = cachedNews != null ? json.decode(cachedNews) : [];
@@ -160,96 +158,98 @@ class _NewsPageState extends State<NewsPage> {
   }
 
   void toggleSelection(int index) {
-  setState(() {
-    if (selectedIndices.contains(index)) {
-      selectedIndices.remove(index);
-    } else {
-      selectedIndices.add(index);
-    }
-    isSelecting = selectedIndices.isNotEmpty;
-  });
-}
-
-void archiveSelectedArticles() async {
-  List<dynamic> toArchive = [];
-  List<dynamic> remaining = [];
-
-  for (int i = 0; i < filteredArticles.length; i++) {
-    if (selectedIndices.contains(i)) {
-      toArchive.add(filteredArticles[i]);
-    } else {
-      remaining.add(filteredArticles[i]);
-    }
+    setState(() {
+      if (selectedIndices.contains(index)) {
+        selectedIndices.remove(index);
+      } else {
+        selectedIndices.add(index);
+      }
+      isSelecting = selectedIndices.isNotEmpty;
+    });
   }
 
-  setState(() {
-    if (showingArchived) {
-      // Remove from archives and add back to articles
-      articles.addAll(toArchive);
-      archivedArticles.removeWhere((article) => toArchive.contains(article));
-    } else {
-      archivedArticles.addAll(toArchive);
-      articles = remaining;
+  void archiveSelectedArticles() async {
+    List<dynamic> toArchive = [];
+    List<dynamic> remaining = [];
+
+    for (int i = 0; i < filteredArticles.length; i++) {
+      if (selectedIndices.contains(i)) {
+        toArchive.add(filteredArticles[i]);
+      } else {
+        remaining.add(filteredArticles[i]);
+      }
     }
 
-    filteredArticles = showingArchived ? archivedArticles : articles;
-    selectedIndices.clear();
-    isSelecting = false;
-  });
+    setState(() {
+      if (showingArchived) {
+        articles.addAll(toArchive);
+        archivedArticles.removeWhere((article) => toArchive.contains(article));
+      } else {
+        archivedArticles.addAll(toArchive);
+        articles = remaining;
+      }
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setString('cachedNews', json.encode(articles));
-  await prefs.setString('archivedNews', json.encode(archivedArticles));
-}
+      filteredArticles = showingArchived ? archivedArticles : articles;
+      selectedIndices.clear();
+      isSelecting = false;
+    });
 
-void deleteSelectedArticles() async {
-  List<dynamic> remaining = [];
-
-  for (int i = 0; i < filteredArticles.length; i++) {
-    if (!selectedIndices.contains(i)) {
-      remaining.add(filteredArticles[i]);
-    }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('cachedNews', json.encode(articles));
+    await prefs.setString('archivedNews', json.encode(archivedArticles));
   }
 
-  setState(() {
-    if (showingArchived) {
-      archivedArticles = remaining;
-    } else {
-      articles = remaining;
+  void deleteSelectedArticles() async {
+    List<dynamic> remaining = [];
+
+    for (int i = 0; i < filteredArticles.length; i++) {
+      if (!selectedIndices.contains(i)) {
+        remaining.add(filteredArticles[i]);
+      }
     }
-    filteredArticles = remaining;
-    selectedIndices.clear();
-    isSelecting = false;
-  });
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setString('cachedNews', json.encode(articles));
-  await prefs.setString('archivedNews', json.encode(archivedArticles));
-}
+    setState(() {
+      if (showingArchived) {
+        archivedArticles = remaining;
+      } else {
+        articles = remaining;
+      }
+      filteredArticles = remaining;
+      selectedIndices.clear();
+      isSelecting = false;
+    });
 
-void toggleArchiveView() {
-  setState(() {
-    showingArchived = !showingArchived;
-    filteredArticles = showingArchived ? archivedArticles : articles;
-    selectedIndices.clear();
-    isSelecting = false;
-  });
-}
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('cachedNews', json.encode(articles));
+    await prefs.setString('archivedNews', json.encode(archivedArticles));
+  }
 
+  void toggleArchiveView() {
+    setState(() {
+      showingArchived = !showingArchived;
+      filteredArticles = showingArchived ? archivedArticles : articles;
+      selectedIndices.clear();
+      isSelecting = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: colorScheme.background,
         title: isSearching
             ? TextField(
                 controller: searchController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Type your keywords here',
-                  hintStyle: TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(color: colorScheme.onBackground),
                   border: InputBorder.none,
                 ),
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: colorScheme.onBackground),
                 onChanged: (query) {
                   filterArticles(query);
                 },
@@ -259,23 +259,23 @@ void toggleArchiveView() {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
-                  color: Colors.white,
+                  color: colorScheme.onBackground,
                 ),
               ),
         actions: [
           if (isSelecting)
             IconButton(
-              icon: Icon(Icons.archive),
+              icon: Icon(Icons.archive, color: colorScheme.onBackground),
               onPressed: archiveSelectedArticles,
             ),
           if (isSelecting)
             IconButton(
-              icon: Icon(Icons.delete),
+              icon: Icon(Icons.delete, color: colorScheme.onBackground),
               onPressed: deleteSelectedArticles,
             ),
           if (!isSelecting)
             IconButton(
-              icon: Icon(isSearching ? Icons.close : Icons.search),
+              icon: Icon(isSearching ? Icons.close : Icons.search, color: colorScheme.onBackground),
               onPressed: () {
                 setState(() {
                   if (isSearching) {
@@ -298,7 +298,7 @@ void toggleArchiveView() {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   UserHeader(),
-                  SingleChildScrollView(
+                  const SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
@@ -307,7 +307,7 @@ void toggleArchiveView() {
                       ],
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Column(
                     children: List.generate(filteredArticles.length, (index) {
                       var article = filteredArticles[index];
@@ -334,8 +334,8 @@ void toggleArchiveView() {
               bottom: 80,
               right: 16,
               child: FloatingActionButton(
-                backgroundColor: Colors.grey[650],
-                child: Icon(showingArchived ? Icons.newspaper : Icons.archive),
+                backgroundColor: colorScheme.secondary,
+                child: Icon(showingArchived ? Icons.newspaper : Icons.archive, color: colorScheme.onSecondary),
                 onPressed: toggleArchiveView,
               ),
             ),
@@ -355,7 +355,9 @@ void toggleArchiveView() {
 class UserHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Padding(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
       padding: EdgeInsets.all(16.0),
       child: Row(
         children: [
@@ -364,13 +366,13 @@ class UserHeader extends StatelessWidget {
             child: Icon(
               Icons.rss_feed,
               size: 40,
-              color: Colors.white,
+              color: colorScheme.onBackground,
             ),
           ),
           SizedBox(width: 10),
           Text(
             'My Feed',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: colorScheme.onBackground),
           ),
         ],
       ),
@@ -386,6 +388,8 @@ class TabButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: TextButton(
@@ -393,13 +397,13 @@ class TabButton extends StatelessWidget {
           // Tab action
         },
         style: ButtonStyle(
-          backgroundColor: selected ? MaterialStateProperty.all(Colors.blue) : null,
+          backgroundColor: selected ? MaterialStateProperty.all(colorScheme.primary) : null,
         ),
         child: Text(
           text,
           style: TextStyle(
             fontSize: 16,
-            color: selected ? Colors.white : Colors.grey,
+            color: selected ? colorScheme.onPrimary : colorScheme.onSurface,
             fontWeight: selected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
@@ -427,14 +431,16 @@ class NewsCard extends StatelessWidget {
     required this.comments,
     required this.likes,
     required this.url,
-    required this.imageUrl, // Add this
+    required this.imageUrl,
     this.isSelected = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Card(
-      color: isSelected ? Colors.blue.withOpacity(0.3) : Colors.grey[850],
+      color: isSelected ? colorScheme.primary.withOpacity(0.3) : colorScheme.surface,
       margin: const EdgeInsets.all(16.0),
       child: InkWell(
         onTap: () async {
@@ -450,7 +456,6 @@ class NewsCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              // Display the image on the left
               Container(
                 width: 80,
                 height: 80,
@@ -462,36 +467,38 @@ class NewsCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 16.0), // Spacing between image and text
-              // Display the text content on the right
+              const SizedBox(width: 16.0),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 10),
                     Text(
                       'by $author, $date',
-                      style: const TextStyle(color: Colors.grey),
+                      style: TextStyle(color: colorScheme.onSurface.withOpacity(0.7)),
                     ),
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        if (views.isNotEmpty) const Icon(Icons.remove_red_eye, size: 16, color: Colors.white),
-                        if (views.isNotEmpty) Text(views, style: const TextStyle(color: Colors.white)),
+                        if (views.isNotEmpty)
+                          Icon(Icons.remove_red_eye, size: 16, color: colorScheme.onSurface),
+                        if (views.isNotEmpty) Text(views, style: TextStyle(color: colorScheme.onSurface)),
                         const SizedBox(width: 10),
-                        if (comments.isNotEmpty) const Icon(Icons.comment, size: 16, color: Colors.white),
-                        if (comments.isNotEmpty) Text(comments, style: const TextStyle(color: Colors.white)),
+                        if (comments.isNotEmpty)
+                          Icon(Icons.comment, size: 16, color: colorScheme.onSurface),
+                        if (comments.isNotEmpty) Text(comments, style: TextStyle(color: colorScheme.onSurface)),
                         const SizedBox(width: 10),
-                        if (likes.isNotEmpty) const Icon(Icons.thumb_up, size: 16, color: Colors.white),
-                        if (likes.isNotEmpty) Text(likes, style: const TextStyle(color: Colors.white)),
+                        if (likes.isNotEmpty)
+                          Icon(Icons.thumb_up, size: 16, color: colorScheme.onSurface),
+                        if (likes.isNotEmpty) Text(likes, style: TextStyle(color: colorScheme.onSurface)),
                       ],
                     ),
                   ],
